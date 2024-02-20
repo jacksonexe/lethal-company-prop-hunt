@@ -18,6 +18,9 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
         public static ConfigEntry<float> MapMultiplier { get; private set; }
         public static ConfigEntry<float> ScrapMultiplier { get; private set; }
         public static ConfigEntry<float> TimeMultiplier { get; private set; }
+        public static ConfigEntry<bool> AllowKeys { get; private set; }
+        public static ConfigEntry<int> ForceTauntInterval { get; private set; }
+        public static ConfigEntry<bool> ForceTaunt { get; private set; }
 
         public static bool init = false;
 
@@ -31,6 +34,20 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
             {
                 Min = 1,
                 Max = LPHRoundManager.MAX_PROPS,
+                CanModifyCallback = CanModifyCallback
+            }));
+
+            ForceTaunt = PropHuntBase.Instance.Config.Bind("Props", "Force Taunt", true, new ConfigDescription("Whether or not to force the player to taunt after a period of time if they have not already done it manually."));
+            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(ForceTaunt, new BoolCheckBoxOptions
+            {
+                CanModifyCallback = CanModifyCallback
+            }));
+
+            ForceTauntInterval = PropHuntBase.Instance.Config.Bind("Props", "Taunting Interval", 30, new ConfigDescription("Forces the player to taunt after a number of seconds."));
+            LethalConfigManager.AddConfigItem(new IntInputFieldConfigItem(ForceTauntInterval, new IntInputFieldOptions
+            {
+                Min = 1,
+                Max = 60,
                 CanModifyCallback = CanModifyCallback
             }));
 
@@ -53,6 +70,12 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
             {
                 Min = 0.00001f,
                 Max = 100f,
+                CanModifyCallback = CanModifyCallback
+            }));
+
+            AllowKeys = PropHuntBase.Instance.Config.Bind("Props", "Allow Keys", true, new ConfigDescription("Whether or not to include the key as a scrap item because its kinda really small and OP."));
+            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(AllowKeys, new BoolCheckBoxOptions
+            {
                 CanModifyCallback = CanModifyCallback
             }));
         }

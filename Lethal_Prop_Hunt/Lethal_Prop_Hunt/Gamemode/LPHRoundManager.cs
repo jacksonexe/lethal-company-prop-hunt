@@ -17,6 +17,7 @@ using System.Runtime.CompilerServices;
 using LethalPropHunt.Patches;
 using System.Reflection.Emit;
 using Lethal_Prop_Hunt.Gamemode.Utils;
+using LethalPropHunt.Input;
 
 namespace LethalPropHunt.Gamemode
 {
@@ -34,13 +35,14 @@ namespace LethalPropHunt.Gamemode
 
         public static readonly int MAX_PROPS = 3;
         internal ManualLogSource mls;
+        private static LPHRoundManager _instance;
         public static LPHRoundManager Instance 
         {
             get {
                 LPHRoundManager.Init();
-                return LPHRoundManager.Instance;
+                return _instance;
             }
-            private set { Instance = value; }
+            private set { _instance = value; }
         }
         public bool IsRunning { get; private set; }
         public bool IsInitializing { get; private set; }
@@ -53,9 +55,9 @@ namespace LethalPropHunt.Gamemode
 
         public static void Init()
         {
-            if(Instance == null)
+            if(_instance == null)
             {
-                Instance = new LPHRoundManager();
+                _instance = new LPHRoundManager();
             }
         }
 
@@ -94,7 +96,7 @@ namespace LethalPropHunt.Gamemode
             {
                 System.Random rand = new System.Random(playersManager.randomMapSeed);
                 PlayerControllerB propController = playersList[rand.Next(0, playersList.Count)];
-                mls.LogDebug("Picked " + propController.playerClientId + " as a prop from between 0 and " + (playersList.Count));
+                mls.LogDebug("Picked " + propController.playerClientId + " as a prop from between 0 and " + (playersList.Count-1));
                 playersList.Remove(propController);
                 props.Add(propController);
             }
@@ -188,6 +190,8 @@ namespace LethalPropHunt.Gamemode
             IsPlayerRotationLocked.Clear();
             IsLocalPlayerProp = false;
             IsRoundOver = false;
+            LPHInputManagement.LastLocalTaunt = DateTime.Now;
+            LPHInputManagement.HasTauntedYet = false;
         }
 
         public void SetRouteStarted()
@@ -285,7 +289,7 @@ namespace LethalPropHunt.Gamemode
 
         public void SetPropOwnership(PlayerControllerB player, GrabbableObject prop, bool owned)
         {
-            if (!IsRunning || IsRoundEnding) { return; }
+            if (!IsRunning || IsRoundEnding || player == null || prop == null || Props == null || StartOfRound.Instance == null) { return; }
             if(owned && !Props.ContainsKey(player.playerClientId))
             {
                 Props.Add(player.playerClientId, prop);
@@ -301,9 +305,21 @@ namespace LethalPropHunt.Gamemode
                     PlayerControllerBPatch.OnDisable();
                 }
                 prop.FallToGround();
+                InteractTrigger trigger = prop.gameObject.GetComponent<InteractTrigger>();
+                prop.EnablePhysics(true);
+                if (trigger != null)
+                {
+                    trigger.interactable = true;
+                }
                 Props.Remove(player.playerClientId);
+                player.playerCollider.transform.localScale = PlayerControllerBPatch.DefaultScale;
             }
-            player.playerCollider.transform.localScale = PlayerControllerBPatch.DefaultScale;
+        }
+
+        internal void SwapPropOwnership(PlayerControllerB player, GrabbableObject oldProp, GrabbableObject newProp)
+        {
+            this.SetPropOwnership(player, oldProp, false);
+            this.SetPropOwnership(player, newProp, true);
         }
     }
 }

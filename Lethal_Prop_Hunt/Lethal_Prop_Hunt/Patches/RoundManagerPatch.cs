@@ -134,6 +134,7 @@ namespace LethalPropHunt.Patches
         [HarmonyPrefix]
         public static bool SetLockedDoorsPatch(Vector3 mainEntrancePosition, RoundManager __instance)
         {
+            if(!ConfigManager.AllowKeys.Value) { return false; }
             //copied from source
             List<DoorLock> list = Object.FindObjectsOfType<DoorLock>().ToList();
             for (int num = list.Count - 1; num >= 0; num--)

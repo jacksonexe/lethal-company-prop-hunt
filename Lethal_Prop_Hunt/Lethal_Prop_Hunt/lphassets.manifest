@@ -1,0 +1,126 @@
+ManifestFileVersion: 0
+CRC: 2718871816
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 62e4a8270411acf951e69aedf36afc5b
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: b29982fe11f064d16cbe6b453af3a744
+  IncrementalBuildHash:
+    serializedVersion: 2
+    Hash: 62e4a8270411acf951e69aedf36afc5b
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 83
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/LPHAssets/Audio/Hunters/hitassist.wav
+- Assets/LPHAssets/Audio/Props/billymays_iguaranteeit-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_shutuuuuuuup.mp3
+- Assets/LPHAssets/Audio/Props/ext_spaghet.mp3
+- Assets/LPHAssets/Audio/Props/oh_yea_he_will_pay-converted.mp3
+- Assets/LPHAssets/Audio/Props/billymays_newoxyclean-converted.mp3
+- Assets/LPHAssets/Audio/Props/hardbass-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_crackmod_ihateyou.mp3
+- Assets/LPHAssets/Audio/Props/billymays_nomoredetergent-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_dance_music.mp3
+- Assets/LPHAssets/Audio/Props/billymays_itsoeasy-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_dosh1.mp3
+- Assets/LPHAssets/Audio/Props/ext_johncena.mp3
+- Assets/LPHAssets/Audio/Props/ext_yeahboy_mp4.mp3
+- Assets/LPHAssets/Audio/Props/dx_thebomb2.mp3
+- Assets/LPHAssets/Audio/Props/ext_dosh3.mp3
+- Assets/LPHAssets/Audio/Props/woohoo-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_get_to_the_choppa.mp3
+- Assets/LPHAssets/Audio/Props/dx_hehe.mp3
+- Assets/LPHAssets/Audio/Props/retarted_laugh-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_dosh4.mp3
+- Assets/LPHAssets/Audio/Props/dx_lookatme.mp3
+- Assets/LPHAssets/Audio/Props/bees_fix-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_die.mp3
+- Assets/LPHAssets/Audio/Props/ext_dosh2.mp3
+- Assets/LPHAssets/Audio/Hunters/glados-president.wav
+- Assets/LPHAssets/Audio/Props/pls_come_again-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_blablaahah.mp3
+- Assets/LPHAssets/Audio/Props/billymays_getontheballs-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_lovely_hehe_mp4.mp3
+- Assets/LPHAssets/Audio/Props/car_horn-converted.mp3
+- Assets/LPHAssets/Audio/Props/i_am_cornholio-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_idiots_2.mp3
+- Assets/LPHAssets/Audio/Props/ill_be_back-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_idiots_1.mp3
+- Assets/LPHAssets/Audio/Props/ext_oah.mp3
+- Assets/LPHAssets/Audio/Props/billymays_areyouontheballs-converted.mp3
+- Assets/LPHAssets/Audio/Props/dx_leaveme.mp3
+- Assets/LPHAssets/Audio/Props/dx_imgonnawoopyourass.mp3
+- Assets/LPHAssets/Audio/Props/tri_poloski2-converted.mp3
+- Assets/LPHAssets/Audio/Props/jc2_nonono.mp3
+- Assets/LPHAssets/Audio/Props/go_away_or_i_shall-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_jim_carrey.mp3
+- Assets/LPHAssets/Audio/Props/ext_wepon.mp3
+- Assets/LPHAssets/Audio/Props/ext_dosh5.mp3
+- Assets/LPHAssets/Audio/Props/billymays_laundrymadeeasy-converted.mp3
+- Assets/LPHAssets/Audio/Props/jc2_nowai.mp3
+- Assets/LPHAssets/Audio/Props/sham_wow-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_xp_start.mp3
+- Assets/LPHAssets/Audio/Props/dx_whoawhoawhoa_1.mp3
+- Assets/LPHAssets/Audio/Props/ext_woo.mp3
+- Assets/LPHAssets/Audio/Props/ext_johncena_remix.mp3
+- Assets/LPHAssets/Audio/Props/dx_idonotmoveout.mp3
+- Assets/LPHAssets/Audio/Props/ext_touch_ma_spaghet.mp3
+- Assets/LPHAssets/Audio/Props/wrong-converted.mp3
+- Assets/LPHAssets/Audio/Props/ok_i_will_tell_you-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_jason1.mp3
+- Assets/LPHAssets/Audio/Props/ext_angry_german_kid.mp3
+- Assets/LPHAssets/Audio/Props/ext_pyrocynical_woo.mp3
+- Assets/LPHAssets/Audio/Props/ext_jason3.mp3
+- Assets/LPHAssets/Audio/Props/ext_illuminaty.mp3
+- Assets/LPHAssets/Audio/Props/boom_hs-converted.mp3
+- Assets/LPHAssets/Audio/Hunters/come_to_papa.wav
+- Assets/LPHAssets/Audio/Props/just_doit2.mp3
+- Assets/LPHAssets/Audio/Props/ext_dundundun.mp3
+- Assets/LPHAssets/Audio/Props/dx_dontworrywurcops.mp3
+- Assets/LPHAssets/Audio/Hunters/laugh.wav
+- Assets/LPHAssets/Audio/Hunters/now_what.wav
+- Assets/LPHAssets/Audio/Props/ext_xp_off.mp3
+- Assets/LPHAssets/Audio/Props/ext_get_no_scope.mp3
+- Assets/LPHAssets/Audio/Props/ext_fart1.mp3
+- Assets/LPHAssets/Audio/Props/ext_fdsa.mp3
+- Assets/LPHAssets/Audio/Hunters/threat_neutralized.wav
+- Assets/LPHAssets/Audio/Props/ext_remove_kebab.mp3
+- Assets/LPHAssets/Audio/Props/ext_crackmod_watchyourrear.mp3
+- Assets/LPHAssets/Audio/Props/ext_crackmod_youareugly.mp3
+- Assets/LPHAssets/Audio/Props/dx_whoawhoawhoa_2.mp3
+- Assets/LPHAssets/Audio/Props/jc2_usonova_bee.mp3
+- Assets/LPHAssets/Audio/Props/chicken_hammer-converted.mp3
+- Assets/LPHAssets/Audio/Props/doh-converted.mp3
+- Assets/LPHAssets/Audio/Hunters/you_underestimate_the_power.wav
+- Assets/LPHAssets/Audio/Hunters/fireassis.wav
+- Assets/LPHAssets/Audio/Props/ext_gameover_mario.mp3
+- Assets/LPHAssets/Audio/Props/ext_fart2.mp3
+- Assets/LPHAssets/Audio/Props/dx_whatashame.mp3
+- Assets/LPHAssets/Audio/Props/just_doit1.mp3
+- Assets/LPHAssets/Audio/Props/leroy_jenkins-converted.mp3
+- Assets/LPHAssets/Audio/Props/dx_heh.mp3
+- Assets/LPHAssets/Audio/Props/dx_iloominarty.mp3
+- Assets/LPHAssets/Audio/Props/ext_and_iiiiiiiiiiiiiiiiiiii.mp3
+- Assets/LPHAssets/LPHAssets.prefab
+- Assets/LPHAssets/Audio/Props/wroooong-converted.mp3
+- Assets/LPHAssets/Audio/Props/ext_getcamera.mp3
+- Assets/LPHAssets/Audio/Props/ext_mlg_triple.mp3
+- Assets/LPHAssets/Audio/Props/ext_getoutofhere_stalker.mp3
+- Assets/LPHAssets/Audio/Props/dx_easy_bruh.mp3
+- Assets/LPHAssets/Audio/Props/dx_augmented.mp3
+- Assets/LPHAssets/Audio/Hunters/you_dont_know_the_power.wav
+- Assets/LPHAssets/Audio/Props/tri_poloski1-converted.mp3
+Dependencies: []

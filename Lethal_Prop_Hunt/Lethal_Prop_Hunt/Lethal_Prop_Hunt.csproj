@@ -102,15 +102,18 @@
     <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Gamemode\Audio\AudioManager.cs" />
     <Compile Include="Gamemode\Networking\LPHNetworkHandler.cs" />
     <Compile Include="Gamemode\LPHRoundManager.cs" />
     <Compile Include="Gamemode\Utils\ConfigManager.cs" />
     <Compile Include="Gamemode\Utils\Utilities.cs" />
     <Compile Include="Input\LPHInputManagement.cs" />
+    <Compile Include="Patches\GrabbableObjectPatch.cs" />
     <Compile Include="Patches\HudManagerPatches.cs" />
     <Compile Include="Patches\NetworkObjectManagerPatch.cs" />
     <Compile Include="Patches\RoundManagerPatch.cs" />
     <Compile Include="Patches\ShotgunPatch.cs" />
+    <Compile Include="Patches\ShovelPatch.cs" />
     <Compile Include="Patches\StartOfRoundPatch.cs" />
     <Compile Include="Patches\PlayerControllerBPatch.cs" />
     <Compile Include="Plugin.cs" />
@@ -120,14 +123,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="tctassets">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="tctassets.manifest">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="UI\" />
@@ -145,6 +140,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="lphassets" />
+    <None Include="lphassets.manifest" />
     <None Include="Resources\crosshair.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -101,7 +101,7 @@ namespace LethalPropHunt.Gamemode
                 else if(id == StartOfRound.Instance.localPlayerController.playerClientId)
                 {
                     //Evil gets it good
-                    GiveShotgunServerRpc(id);
+                    GiveHunterWeaponsServerRpc(id);
                 }
             }
         }
@@ -163,7 +163,7 @@ namespace LethalPropHunt.Gamemode
         }
 
         [ServerRpc(RequireOwnership = false)]
-        public void GiveShotgunServerRpc(ulong clientId)
+        public void GiveHunterWeaponsServerRpc(ulong clientId)
         {
             PlayerControllerB player = null;
             for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)
@@ -178,6 +178,27 @@ namespace LethalPropHunt.Gamemode
             if (!player.isPlayerDead)
             {
                 GameObject obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.allItemsList.itemsList[59].spawnPrefab, spawnPos, Quaternion.identity);
+                obj.GetComponent<GrabbableObject>().fallTime = 0f;
+
+                obj.AddComponent<ScanNodeProperties>().scrapValue = 0;
+                obj.GetComponent<GrabbableObject>().SetScrapValue(0);
+                obj.GetComponent<NetworkObject>().Spawn();
+
+                obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.allItemsList.itemsList[10].spawnPrefab, spawnPos, Quaternion.identity);
+                obj.GetComponent<GrabbableObject>().fallTime = 0f;
+
+                obj.AddComponent<ScanNodeProperties>().scrapValue = 0;
+                obj.GetComponent<GrabbableObject>().SetScrapValue(0);
+                obj.GetComponent<NetworkObject>().Spawn();
+
+                obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.allItemsList.itemsList[9].spawnPrefab, spawnPos, Quaternion.identity);
+                obj.GetComponent<GrabbableObject>().fallTime = 0f;
+
+                obj.AddComponent<ScanNodeProperties>().scrapValue = 0;
+                obj.GetComponent<GrabbableObject>().SetScrapValue(0);
+                obj.GetComponent<NetworkObject>().Spawn();
+
+                obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.allItemsList.itemsList[14].spawnPrefab, spawnPos, Quaternion.identity);
                 obj.GetComponent<GrabbableObject>().fallTime = 0f;
 
                 obj.AddComponent<ScanNodeProperties>().scrapValue = 0;
@@ -254,35 +275,6 @@ namespace LethalPropHunt.Gamemode
         }
 
         [ServerRpc(RequireOwnership = false)]
-        internal void PlayTauntServerRpc(ulong playerClientId, string role)
-        {
-            ClientRpcParams clientRpcParams = createBroadcastConfig();
-            PlayTauntClientRpc(playerClientId, role, clientRpcParams);
-        }
-
-        [ClientRpc]
-        public void PlayTauntClientRpc(ulong playerId, string role, ClientRpcParams clientRpcParams = default)
-        {
-            PlayerControllerB tauntingPlayer = StartOfRound.Instance.allPlayerScripts[playerId];
-            AudioClip toPlay = null;
-            if(role == null)
-            {
-                
-            }
-            else if (role.Equals(LPHRoundManager.PROPS_ROLE))
-            {
-
-            }
-            else
-            {
-
-            }
-            if (toPlay != null) {
-                tauntingPlayer.currentVoiceChatAudioSource.PlayOneShot(toPlay);
-            }
-        }
-
-        [ServerRpc(RequireOwnership = false)]
         internal void NotifyOfRotationLockChangeServerRpc(ulong playerId)
         {
             ClientRpcParams clientRpcParams = createBroadcastConfig();
@@ -300,6 +292,41 @@ namespace LethalPropHunt.Gamemode
             {
                 LPHRoundManager.IsPlayerRotationLocked.Add(playerId, true);
             }
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        internal void SwapPropOwnershipServerRpc(ulong playerClientId, ulong oldProp, ulong newProp)
+        {
+            ClientRpcParams clientRpcParams = createBroadcastConfig();
+            SwapPropOwnershipClientRpc(playerClientId, oldProp, newProp, clientRpcParams);
+        }
+
+        [ClientRpc]
+        public void SwapPropOwnershipClientRpc(ulong playerId, ulong oldPropId, ulong newPropId, ClientRpcParams clientRpcParams = default)
+        {
+            mls.LogDebug("recieved prop ownership swap request for " + playerId + " from " + oldPropId + " to " + newPropId);
+            GrabbableObject oldProp = null;
+            GrabbableObject newProp = null;
+            GrabbableObject[] array = UnityEngine.Object.FindObjectsOfType<GrabbableObject>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] != null && array[i].NetworkObjectId == oldPropId)
+                {
+                    oldProp = (GrabbableObject)array[i];
+                }
+
+                if (array[i] != null && array[i].NetworkObjectId == newPropId)
+                {
+                    newProp = (GrabbableObject)array[i];
+                }
+            }
+            if (oldProp == null || newProp == null || StartOfRound.Instance == null)
+            {
+                mls.LogError("Unable to locate prop");
+                return;
+            }
+            PlayerControllerB player = StartOfRound.Instance.allPlayerScripts[(int)playerId];
+            LPHRoundManager.Instance.SwapPropOwnership(player, oldProp, newProp);
         }
     }
 }

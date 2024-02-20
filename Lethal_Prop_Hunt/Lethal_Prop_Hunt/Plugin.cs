@@ -16,6 +16,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using BepInEx.Configuration;
 using Lethal_Prop_Hunt.Patches;
+using LethalPropHunt.Audio;
 
 namespace LethalPropHunt
 {
@@ -66,9 +67,9 @@ namespace LethalPropHunt
                 Instance = this;
             }
             var dllFolderPath = System.IO.Path.GetDirectoryName(Info.Location);
-            var assetBundleFilePath = System.IO.Path.Combine(dllFolderPath, "tctassets");
+            var assetBundleFilePath = System.IO.Path.Combine(dllFolderPath, "lphassets");
             bundle = AssetBundle.LoadFromFile(assetBundleFilePath);
-            netManagerPrefab = bundle.LoadAsset<GameObject>("Assets/TCAssets/TCTAssets.prefab");
+            netManagerPrefab = bundle.LoadAsset<GameObject>("Assets/LPHAssets/LPHAssets.prefab");
             netManagerPrefab.AddComponent<LPHNetworkHandler>();
 
             mls = BepInEx.Logging.Logger.CreateLogSource(modGUID);
@@ -80,6 +81,9 @@ namespace LethalPropHunt
             harmony.PatchAll(typeof(HudManagerPatches));
             harmony.PatchAll(typeof(RoundManagerPatch));
             harmony.PatchAll(typeof(ShotgunPatch));
+            harmony.PatchAll(typeof(ShovelPatch));
+            harmony.PatchAll(typeof(GrabbableObjectPatch));
+            harmony.PatchAll(typeof(AudioManager));
 
             LethalConfigManager.SetModDescription("Configuration for Lethal Prop Hunt");
             LPHRoundManager.Init();

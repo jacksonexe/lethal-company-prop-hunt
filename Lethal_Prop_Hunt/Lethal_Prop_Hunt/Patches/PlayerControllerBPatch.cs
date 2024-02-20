@@ -13,6 +13,9 @@ using System.Reflection;
 using Unity.Netcode;
 using UnityEngine.InputSystem.HID;
 using UnityEngine.InputSystem;
+using LethalPropHunt.Input;
+using LethalPropHunt.Audio;
+using Lethal_Prop_Hunt.Gamemode.Utils;
 
 namespace LethalPropHunt.Patches
 {
@@ -93,8 +96,24 @@ namespace LethalPropHunt.Patches
         [HarmonyPatch("Update")]
         private static void PatchUpdate(ref PlayerControllerB __instance, ref bool ___isCameraDisabled, ref bool ___isPlayerControlled, ref MeshFilter ___playerBadgeMesh, ref MeshRenderer ___playerBetaBadgeMesh)
         {
+            ___playerBadgeMesh.gameObject.SetActive(false);
+            ((Renderer)___playerBetaBadgeMesh).enabled = false;
             if (LPHRoundManager.Instance.IsRunning && !LPHRoundManager.Instance.IsRoundEnding)
             {
+                if(__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId && LPHRoundManager.IsLocalPlayerProp)
+                {
+                    if (LPHInputManagement.LastLocalTaunt == null)
+                    {
+                        LPHInputManagement.LastLocalTaunt = DateTime.Now;
+                    }
+                    TimeSpan diff = DateTime.Now - LPHInputManagement.LastLocalTaunt;
+                    if(diff.TotalSeconds > ConfigManager.ForceTauntInterval.Value && ConfigManager.ForceTaunt.Value) //Force taunting if enabled
+                    {
+                        StartOfRound.Instance.localPlayerController.movementAudio.PlayOneShot(AudioManager.LoadRandomClip(LPHRoundManager.IsLocalPlayerProp ? LPHRoundManager.PROPS_ROLE : LPHRoundManager.HUNTERS_ROLE), AudioManager.TauntVolume.Value);
+                        LPHInputManagement.LastLocalTaunt = DateTime.Now;
+                        LPHInputManagement.HasTauntedYet = true;
+                    }
+                }
                 foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
                 {
                     if (LPHRoundManager.Instance.GetPlayerRole(player).Equals(LPHRoundManager.PROPS_ROLE) && LPHRoundManager.Props.ContainsKey(player.playerClientId) && !player.isPlayerDead)
@@ -107,8 +126,6 @@ namespace LethalPropHunt.Patches
                         player.usernameBillboard.gameObject.SetActive(false);
                         player.usernameBillboardText.gameObject.SetActive(false);
                         player.usernameBillboardText.SetText("");
-                        ___playerBadgeMesh.gameObject.SetActive(false);
-                        ((Renderer)___playerBetaBadgeMesh).enabled = false;
 
                     }
                     else
@@ -121,8 +138,6 @@ namespace LethalPropHunt.Patches
                         player.usernameBillboard.gameObject.SetActive(true);
                         player.usernameBillboardText.gameObject.SetActive(true);
                         player.usernameBillboardText.SetText(player.playerUsername);
-                        ___playerBadgeMesh.gameObject.SetActive(true);
-                        ((Renderer)___playerBetaBadgeMesh).enabled = true;
                     }
                 }
             }
@@ -138,8 +153,6 @@ namespace LethalPropHunt.Patches
                     player.usernameBillboard.gameObject.SetActive(true);
                     player.usernameBillboardText.gameObject.SetActive(true);
                     player.usernameBillboardText.SetText(player.playerUsername);
-                    ___playerBadgeMesh.gameObject.SetActive(true);
-                    ((Renderer)___playerBetaBadgeMesh).enabled = true;
                 }
             }
             if (!___isPlayerControlled || ___isCameraDisabled)
@@ -357,7 +370,19 @@ namespace LethalPropHunt.Patches
             }
             if (LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE))
             {
-                LPHNetworkHandler.Instance.SyncPropOwnershipServerRpc(StartOfRound.Instance.localPlayerController.playerClientId, currentlyGrabbingObject.NetworkObjectId, true);
+                PropHuntBase.mls.LogDebug("I am becoming a prop on layer " + currentlyGrabbingObject.gameObject.layer);
+                if (currentlyGrabbingObject.itemProperties != null)
+                {
+                    PropHuntBase.mls.LogDebug("Prop is " + Mathf.RoundToInt(Mathf.Clamp(currentlyGrabbingObject.itemProperties.weight - 1f, 0f, 100f) * 105f) + "lbs");
+                }
+                if (LPHRoundManager.Props.ContainsKey(__instance.playerClientId))
+                {
+                    LPHNetworkHandler.Instance.SwapPropOwnershipServerRpc(__instance.playerClientId, LPHRoundManager.Props[__instance.playerClientId].NetworkObjectId, currentlyGrabbingObject.NetworkObjectId);
+                }
+                else
+                {
+                    LPHNetworkHandler.Instance.SyncPropOwnershipServerRpc(StartOfRound.Instance.localPlayerController.playerClientId, currentlyGrabbingObject.NetworkObjectId, true);
+                }
                 return false;
             }
             else
@@ -408,7 +433,7 @@ namespace LethalPropHunt.Patches
         {
             //overridden from source to disable jump sfx
             var methodInfo = typeof(PlayerControllerB).GetMethod(
-                "SetHoverTipAndCurrentInteractTrigger",
+                "IsPlayerNearGround",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
             );
             bool isPlayerNearGround = (bool)methodInfo.Invoke(__instance, new object[] { });
@@ -440,16 +465,37 @@ namespace LethalPropHunt.Patches
         {
             //Copied from source to remove land on ground audio
             __instance.GetCurrentMaterialStandingOn();
-            if (__instance.fallValue < -9f && (!LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId)))
+            if (__instance.fallValue < -9f)
             {
                 if (__instance.fallValue < -16f)
                 {
-                    __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerHitGroundHard, 1f);
+                    if (LPHRoundManager.Props.ContainsKey(__instance.playerClientId))
+                    {
+                        GrabbableObject prop = LPHRoundManager.Props[__instance.playerClientId];
+                        if (prop.itemProperties != null && prop.itemProperties.dropSFX != null)
+                        {
+                            __instance.movementAudio.PlayOneShot(prop.itemProperties.dropSFX); //Play item sounds instead
+                        }
+                    }
+                    else {
+                        __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerHitGroundHard, 1f);
+                    }
                     WalkieTalkie.TransmitOneShotAudio(__instance.movementAudio, StartOfRound.Instance.playerHitGroundHard);
                 }
                 else if (__instance.fallValue < -2f)
                 {
-                    __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerHitGroundSoft, 1f);
+                    if (LPHRoundManager.Props.ContainsKey(__instance.playerClientId))
+                    {
+                        GrabbableObject prop = LPHRoundManager.Props[__instance.playerClientId];
+                        if (prop.itemProperties != null && prop.itemProperties.dropSFX != null)
+                        {
+                            __instance.movementAudio.PlayOneShot(prop.itemProperties.dropSFX);
+                        }
+                    }
+                    else
+                    {
+                        __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerHitGroundSoft, 1f);
+                    }
                 }
                 __instance.LandFromJumpServerRpc(__instance.fallValue < -16f);
             }
@@ -488,10 +534,15 @@ namespace LethalPropHunt.Patches
             if (LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE) && LPHRoundManager.Props.ContainsKey(__instance.playerClientId))
             {
                 GrabbableObject prop = LPHRoundManager.Props[__instance.playerClientId];
-                PropHuntBase.mls.LogDebug("Prop is of size " + prop.propBody.transform.localScale);
-                if (prop != null && prop.propBody.transform.localScale.magnitude > 10 && damageNumber > 0) //Reduce damage when in prop
+                if (prop != null && prop.itemProperties != null && damageNumber > 0) //Reduce damage when in prop
                 {
-                    damageNumber = (int)Math.Floor((double)(damageNumber / 2));
+                    int weight = Mathf.RoundToInt(Mathf.Clamp(prop.itemProperties.weight - 1f, 0f, 100f) * 105f);
+                    int factor = weight % 3;
+                    if (factor > 0 && weight > 3) //Scaling based on weight, higher the weight, the less health you have
+                    {
+                        PropHuntBase.mls.LogDebug("Prop is of size " + weight + " factor set to " + factor + " damaged reduced from " + damageNumber + " to " + (damageNumber / factor));
+                        damageNumber = Mathf.RoundToInt(damageNumber / factor);
+                    }
                 }
             }
         }
