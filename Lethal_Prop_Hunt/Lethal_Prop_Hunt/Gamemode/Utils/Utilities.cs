@@ -72,5 +72,26 @@ namespace LethalPropHunt.Gamemode
             Utilities.TeleportPlayer(playerObj, teleportPos);
             LPHNetworkHandler.Instance.TeleportPlayerServerRpc(playerObj, teleportPos);
         }
+
+
+        public static UnlockableSuit GetSuitByName(string Name)
+        {
+            List<UnlockableItem> Unlockables = StartOfRound.Instance.unlockablesList.unlockables;
+
+            foreach (UnlockableSuit unlockable in Resources.FindObjectsOfTypeAll<UnlockableSuit>())
+            {
+                if (unlockable.syncedSuitID.Value >= 0)
+                {
+                    string SuitName = Unlockables[unlockable.syncedSuitID.Value].unlockableName;
+
+                    if (SuitName == Name)
+                    {
+                        return unlockable;
+                    }
+                }
+            }
+
+            return null;
+        }
     }
 }

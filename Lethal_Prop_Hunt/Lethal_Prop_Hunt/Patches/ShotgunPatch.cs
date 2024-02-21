@@ -41,13 +41,19 @@ namespace Lethal_Prop_Hunt.Patches
                 {
                     ___enemyColliders = new RaycastHit[10];
                 }
-                int num4 = Physics.SphereCastNonAlloc(ray, 5f, ___enemyColliders, 15f, (524288 | (1 << 6)), QueryTriggerInteraction.Collide);
+                int num4 = Physics.SphereCastNonAlloc(ray, 5f, ___enemyColliders, 15f, (524288 | (1 << 6)), QueryTriggerInteraction.Collide);//Add layer 6 to mask
                 GrabbableObject component;
                 RaycastHit hitInfo;
                 for (int i = 0; i < num4; i++)
                 {
                     PropHuntBase.mls.LogDebug("Collided with " + ___enemyColliders[i].collider.name);
-                    if (___enemyColliders[i].collider != null && ___enemyColliders[i].collider.gameObject.TryGetComponent<GrabbableObject>(out component))
+                    if (Physics.Linecast(shotgunPosition, ___enemyColliders[i].collider.transform.position, out hitInfo, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
+                    {
+                        Debug.DrawRay(hitInfo.point, Vector3.up, Color.red, 15f);
+                        Debug.DrawLine(shotgunPosition, ___enemyColliders[i].point, Color.cyan, 15f);
+                        Debug.Log("Raycast hit wall");
+                    }
+                    else if (___enemyColliders[i].collider != null && ___enemyColliders[i].collider.gameObject.TryGetComponent<GrabbableObject>(out component))
                     {
                         float num5 = Vector3.Distance(shotgunPosition, ___enemyColliders[i].point);
                         int num6 = ((num5 < 3.7f) ? 5 : ((!(num5 < 6f)) ? 2 : 3));
@@ -55,13 +61,7 @@ namespace Lethal_Prop_Hunt.Patches
                         bool found = false;
                         foreach(GrabbableObject prop in LPHRoundManager.Props.Values)
                         {
-                            if (Physics.Linecast(shotgunPosition, ___enemyColliders[i].point, out hitInfo, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
-                            {
-                                Debug.DrawRay(hitInfo.point, Vector3.up, Color.red, 15f);
-                                Debug.DrawLine(shotgunPosition, ___enemyColliders[i].point, Color.cyan, 15f);
-                                Debug.Log("Raycast hit wall");
-                            }
-                            else if(prop.NetworkObjectId == component.NetworkObjectId)
+                            if(prop.NetworkObjectId == component.NetworkObjectId)
                             {
                                 found = true; break;
                             }

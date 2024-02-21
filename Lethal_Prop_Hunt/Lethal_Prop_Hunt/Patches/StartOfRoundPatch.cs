@@ -1,5 +1,6 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
+using Lethal_Prop_Hunt.Gamemode.Utils;
 using LethalPropHunt.Gamemode;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace LethalPropHunt.Patches
     [HarmonyPatch(typeof(StartOfRound))]
     internal class StartOfRoundPatch
     {
+
         [HarmonyPatch("OnShipLandedMiscEvents")]
         [HarmonyPostfix]
         static void OnShipLandedMiscEventsPatch(StartOfRound __instance)
@@ -27,6 +29,11 @@ namespace LethalPropHunt.Patches
         [HarmonyPostfix]
         static void UpdatePatch(StartOfRound __instance)
         {
+            if (__instance.mapScreen != null)
+            {
+                __instance.mapScreen.enabled = false; //Disable map
+                __instance.mapScreen.gameObject.SetActive(false);
+            }
             if (__instance.IsHost || __instance.IsServer)
             {
                 if (!LPHRoundManager.Instance.IsInitializing)
@@ -104,6 +111,8 @@ namespace LethalPropHunt.Patches
                 player.usernameBillboardText.gameObject.SetActive(true);
                 player.usernameBillboardText.SetText(player.playerUsername);
             }
+            UnlockableSuit.SwitchSuitForAllPlayers(0);
+
         }
 
     }

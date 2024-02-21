@@ -65,7 +65,7 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
                 Max = 100f,
                 CanModifyCallback = CanModifyCallback
             }));
-            TimeMultiplier = PropHuntBase.Instance.Config.Bind("Map", "Time Multiplier", 0.2f, "The multiplier on how fast time passes, 1 being a normal round. <1 is slower rounds, >1 is faster rounds.");
+            TimeMultiplier = PropHuntBase.Instance.Config.Bind("Map", "Time Multiplier", 2f, "The multiplier on how fast time passes, 1 being a normal round. <1 is slower rounds, >1 is faster rounds.");
             LethalConfigManager.AddConfigItem(new FloatInputFieldConfigItem(TimeMultiplier, new FloatInputFieldOptions
             {
                 Min = 0.00001f,

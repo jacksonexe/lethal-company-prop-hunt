@@ -1,5 +1,6 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
+using LethalPropHunt.Audio;
 using LethalPropHunt.Patches;
 using System;
 using System.Collections;
@@ -89,6 +90,7 @@ namespace LethalPropHunt.Gamemode
 
                 if (role.Equals(LPHRoundManager.PROPS_ROLE))
                 {
+                    UnlockableSuit.SwitchSuitForPlayer(player, 24, true);
                     if (RoundManager.Instance.insideAINodes.Length != 0)
                     {
                         Vector3 position3 = RoundManager.Instance.insideAINodes[UnityEngine.Random.Range(0, RoundManager.Instance.insideAINodes.Length)].transform.position;
@@ -98,10 +100,12 @@ namespace LethalPropHunt.Gamemode
                         StartCoroutine(Utilities.TeleportPlayerCoroutine((int)player.playerClientId, position3));
                     }
                 }
-                else if(id == StartOfRound.Instance.localPlayerController.playerClientId)
+                else if (id == StartOfRound.Instance.localPlayerController.playerClientId)
                 {
                     //Evil gets it good
                     GiveHunterWeaponsServerRpc(id);
+                    UnlockableSuit.SwitchSuitForPlayer(player, 0, false);
+
                 }
             }
         }
@@ -156,7 +160,8 @@ namespace LethalPropHunt.Gamemode
         [ClientRpc]
         public void NotifyRoundStartClientRpc(ClientRpcParams clientRpcParans = default)
         {
-            if (!StartOfRound.Instance.IsHost && !StartOfRound.Instance.IsServer) {
+            if (!StartOfRound.Instance.IsHost && !StartOfRound.Instance.IsServer)
+            {
                 LPHRoundManager.Instance.ResetRound();
                 LPHRoundManager.Instance.SetRouteStarted();
             }
@@ -265,7 +270,7 @@ namespace LethalPropHunt.Gamemode
                     prop = (GrabbableObject)array[i];
                 }
             }
-            if(prop == null || StartOfRound.Instance == null)
+            if (prop == null || StartOfRound.Instance == null)
             {
                 mls.LogError("Unable to locate prop");
                 return;
@@ -327,6 +332,20 @@ namespace LethalPropHunt.Gamemode
             }
             PlayerControllerB player = StartOfRound.Instance.allPlayerScripts[(int)playerId];
             LPHRoundManager.Instance.SwapPropOwnership(player, oldProp, newProp);
+        }
+
+        [ServerRpc(RequireOwnership = false)]
+        internal void SyncPlayAudioServerRpc(ulong playerClientId, string assetName)
+        {
+            ClientRpcParams clientRpcParams = createBroadcastConfig();
+            SyncPlayAudioClientRpc(playerClientId, assetName, clientRpcParams);
+        }
+
+        [ClientRpc]
+        public void SyncPlayAudioClientRpc(ulong playerClientId, string assetName, ClientRpcParams clientRpcParams = default)
+        {
+            PlayerControllerB player = StartOfRound.Instance.allPlayerScripts[(int)playerClientId];
+            player.movementAudio.PlayOneShot(AudioManager.LoadAudioClip(assetName), AudioManager.TauntVolume.Value);
         }
     }
 }

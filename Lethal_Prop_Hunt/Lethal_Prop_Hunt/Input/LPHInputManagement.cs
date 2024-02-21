@@ -91,7 +91,7 @@ namespace LethalPropHunt.Input
                 }
                 LastLocalTaunt = DateTime.Now;
                 HasTauntedYet = true;
-                StartOfRound.Instance.localPlayerController.movementAudio.PlayOneShot(AudioManager.LoadRandomClip(LPHRoundManager.IsLocalPlayerProp ? LPHRoundManager.PROPS_ROLE : LPHRoundManager.HUNTERS_ROLE), AudioManager.TauntVolume.Value);
+                LPHNetworkHandler.Instance.SyncPlayAudioServerRpc(StartOfRound.Instance.localPlayerController.playerClientId, AudioManager.SelectRandomClip(LPHRoundManager.IsLocalPlayerProp ? LPHRoundManager.PROPS_ROLE : LPHRoundManager.HUNTERS_ROLE));
             }
         }
     }

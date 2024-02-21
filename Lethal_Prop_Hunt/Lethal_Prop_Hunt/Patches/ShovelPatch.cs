@@ -18,7 +18,7 @@ namespace Lethal_Prop_Hunt.Patches
         public static void HitShovelPatch(bool cancel, Shovel __instance, ref RaycastHit[] ___objectsHitByShovel, ref List<RaycastHit> ___objectsHitByShovelList, ref int ___shovelMask)
         {
             PlayerControllerB localPlayerController = GameNetworkManager.Instance.localPlayerController;
-            if (localPlayerController == null || __instance.playerHeldBy == localPlayerController && LPHRoundManager.Instance.GetPlayerRole(localPlayerController).Equals(LPHRoundManager.HUNTERS_ROLE))
+            if (localPlayerController == null || __instance.playerHeldBy != localPlayerController || !LPHRoundManager.Instance.GetPlayerRole(localPlayerController).Equals(LPHRoundManager.HUNTERS_ROLE))
             {
                 return;
             }

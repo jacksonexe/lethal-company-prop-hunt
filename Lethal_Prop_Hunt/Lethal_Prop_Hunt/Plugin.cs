@@ -84,6 +84,7 @@ namespace LethalPropHunt
             harmony.PatchAll(typeof(ShovelPatch));
             harmony.PatchAll(typeof(GrabbableObjectPatch));
             harmony.PatchAll(typeof(AudioManager));
+            harmony.PatchAll(typeof(TimeOfDayPatch));
 
             LethalConfigManager.SetModDescription("Configuration for Lethal Prop Hunt");
             LPHRoundManager.Init();

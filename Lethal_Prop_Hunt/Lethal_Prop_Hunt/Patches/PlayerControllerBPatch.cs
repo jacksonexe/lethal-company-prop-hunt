@@ -98,6 +98,7 @@ namespace LethalPropHunt.Patches
         {
             ___playerBadgeMesh.gameObject.SetActive(false);
             ((Renderer)___playerBetaBadgeMesh).enabled = false;
+            ___playerBetaBadgeMesh.gameObject.SetActive(false);
             if (LPHRoundManager.Instance.IsRunning && !LPHRoundManager.Instance.IsRoundEnding)
             {
                 if(__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId && LPHRoundManager.IsLocalPlayerProp)
@@ -109,7 +110,7 @@ namespace LethalPropHunt.Patches
                     TimeSpan diff = DateTime.Now - LPHInputManagement.LastLocalTaunt;
                     if(diff.TotalSeconds > ConfigManager.ForceTauntInterval.Value && ConfigManager.ForceTaunt.Value) //Force taunting if enabled
                     {
-                        StartOfRound.Instance.localPlayerController.movementAudio.PlayOneShot(AudioManager.LoadRandomClip(LPHRoundManager.IsLocalPlayerProp ? LPHRoundManager.PROPS_ROLE : LPHRoundManager.HUNTERS_ROLE), AudioManager.TauntVolume.Value);
+                        LPHNetworkHandler.Instance.SyncPlayAudioServerRpc(__instance.playerClientId, AudioManager.SelectRandomClip(LPHRoundManager.PROPS_ROLE));
                         LPHInputManagement.LastLocalTaunt = DateTime.Now;
                         LPHInputManagement.HasTauntedYet = true;
                     }
@@ -193,8 +194,11 @@ namespace LethalPropHunt.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch("LateUpdate")]
-        private static void PatchCamera(ref bool ___isCameraDisabled, ref bool ___isPlayerControlled)
+        private static void PatchCamera(ref bool ___isCameraDisabled, ref bool ___isPlayerControlled, ref MeshFilter ___playerBadgeMesh, ref MeshRenderer ___playerBetaBadgeMesh)
         {
+            ___playerBadgeMesh.gameObject.SetActive(false);
+            ((Renderer)___playerBetaBadgeMesh).enabled = false;
+            ___playerBetaBadgeMesh.gameObject.SetActive(false);
             if (Instance == null || Instance.playerClientId != StartOfRound.Instance.localPlayerController.playerClientId) { return; }
             var originalTransform = PropHuntBase.OriginalTransform;
 
@@ -536,8 +540,12 @@ namespace LethalPropHunt.Patches
                 GrabbableObject prop = LPHRoundManager.Props[__instance.playerClientId];
                 if (prop != null && prop.itemProperties != null && damageNumber > 0) //Reduce damage when in prop
                 {
+                    __instance.DropBlood(-__instance.transform.forward, true, false);
+                    __instance.DropBlood(-__instance.transform.forward, true, false);
+                    __instance.DropBlood(-__instance.transform.forward, true, false);
+                    __instance.DropBlood(-__instance.transform.forward, true, false);
                     int weight = Mathf.RoundToInt(Mathf.Clamp(prop.itemProperties.weight - 1f, 0f, 100f) * 105f);
-                    int factor = weight % 3;
+                    int factor = Mathf.CeilToInt(weight / 3);
                     if (factor > 0 && weight > 3) //Scaling based on weight, higher the weight, the less health you have
                     {
                         PropHuntBase.mls.LogDebug("Prop is of size " + weight + " factor set to " + factor + " damaged reduced from " + damageNumber + " to " + (damageNumber / factor));
@@ -545,6 +553,15 @@ namespace LethalPropHunt.Patches
                     }
                 }
             }
+        }
+
+        [HarmonyPatch("RandomizeBloodRotationAndScale")]
+        [HarmonyPostfix]
+        public static void RandomizeBloodScale(ref Transform blood, PlayerControllerB __instance)
+        {
+            Transform obj = blood;
+            obj.localScale *= 4f;
+            blood.position += new Vector3((float)UnityEngine.Random.Range(-1, 1) * 4f, 0.55f, (float)UnityEngine.Random.Range(-1, 1) * 4f);
         }
     }
 }
