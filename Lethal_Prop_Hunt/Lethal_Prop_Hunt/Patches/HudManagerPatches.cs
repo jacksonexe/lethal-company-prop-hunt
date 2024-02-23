@@ -5,12 +5,26 @@ using System.Linq;
 using TMPro;
 using LethalPropHunt.Gamemode;
 using UnityEngine;
+using Trouble_In_Company_Town.UI;
+using System.Reflection;
+using System;
+using LethalPropHunt.Input;
+using Lethal_Prop_Hunt.Gamemode.Utils;
 
 namespace LethalPropHunt.Patches
 {
     [HarmonyPatch(typeof(HUDManager))]
     internal class HudManagerPatches
     {
+
+        public static LPHTauntCountdown TauntCooldownUI;
+
+        [HarmonyPatch("Start")]
+        [HarmonyPostfix]
+        public static void StartPatch(ref HUDManager __instance)
+        {
+            TauntCooldownUI = new LPHTauntCountdown(__instance);
+        }
 
         [HarmonyPatch("SetSpectatingTextToPlayer")]
         [HarmonyPostfix]
@@ -94,6 +108,30 @@ namespace LethalPropHunt.Patches
 
             playerScript.gameplayCamera.transform.position = PropHuntBase.OriginalTransform.transform.position;
             playerScript.gameplayCamera.transform.rotation = PropHuntBase.OriginalTransform.transform.rotation;
+        }
+
+        [HarmonyPatch("Update")]
+        [HarmonyPostfix]
+        public static void UpdatePatch(ref HUDManager __instance)
+        {
+            if (LPHRoundManager.Instance.IsRunning)
+            {
+                if (!StartOfRound.Instance.localPlayerController.isPlayerDead && LPHRoundManager.Instance.IsPlayerProp(StartOfRound.Instance.localPlayerController))
+                {
+                    if (LPHInputManagement.LastLocalTaunt != null)
+                    {
+                        TauntCooldownUI.SetTimer((int)(ConfigManager.ForceTauntInterval.Value - DateTime.Now.Subtract(LPHInputManagement.LastLocalTaunt).TotalSeconds));
+                    }
+                    else
+                    {
+                        TauntCooldownUI.HideTimer();
+                    }
+                }
+            }
+            else
+            {
+                TauntCooldownUI.HideTimer();
+            }
         }
     }
 }

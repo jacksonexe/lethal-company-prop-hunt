@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Lethal_Prop_Hunt.Gamemode.Utils;
 using LethalPropHunt.Gamemode;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,13 @@ namespace Lethal_Prop_Hunt.Patches
             {
                 HUDManager.Instance.SetClockVisible(true);
             }
+        }
+
+        [HarmonyPatch("Start")]
+        [HarmonyPrefix]
+        private static void startPatch(ref float ___globalTimeSpeedMultiplier)
+        {
+            ___globalTimeSpeedMultiplier = ConfigManager.TimeMultiplier.Value;
         }
     }
 }

@@ -273,6 +273,11 @@ namespace LethalPropHunt.Gamemode
             return PropPlayers.Contains(player) ? PROPS_ROLE : HUNTERS_ROLE;
         }
 
+        public bool IsPlayerProp(PlayerControllerB player)
+        {
+            return PropPlayers.Contains(player);
+        }
+
         internal string GetPlayerRoleById(ulong playerId)
         {
             PlayerControllerB player = null;

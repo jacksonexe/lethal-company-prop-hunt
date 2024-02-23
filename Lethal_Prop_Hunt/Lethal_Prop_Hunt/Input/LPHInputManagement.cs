@@ -40,7 +40,7 @@ namespace LethalPropHunt.Input
             if (LPHRoundManager.Instance.IsRunning)
             {
                 PlayerControllerB player = StartOfRound.Instance.localPlayerController;
-                if (LPHRoundManager.IsLocalPlayerProp && LPHRoundManager.Props.ContainsKey(player.playerClientId))
+                if (LPHRoundManager.Instance.IsPlayerProp(player) && LPHRoundManager.Props.ContainsKey(player.playerClientId))
                 {
                     GrabbableObject prop = LPHRoundManager.Props[player.playerClientId];
                     if (player.quickMenuManager.isMenuOpen || player.isPlayerDead || prop == null || prop.itemProperties == null || (prop.itemProperties.usableInSpecialAnimations && (player.isGrabbingObjectAnimation || player.inTerminalMenu || player.isTypingChat || (player.inSpecialInteractAnimation && !player.inShockingMinigame))))
@@ -91,7 +91,7 @@ namespace LethalPropHunt.Input
                 }
                 LastLocalTaunt = DateTime.Now;
                 HasTauntedYet = true;
-                LPHNetworkHandler.Instance.SyncPlayAudioServerRpc(StartOfRound.Instance.localPlayerController.playerClientId, AudioManager.SelectRandomClip(LPHRoundManager.IsLocalPlayerProp ? LPHRoundManager.PROPS_ROLE : LPHRoundManager.HUNTERS_ROLE));
+                LPHNetworkHandler.Instance.SyncPlayAudioServerRpc(StartOfRound.Instance.localPlayerController.playerClientId, AudioManager.SelectRandomClip(LPHRoundManager.Instance.IsPlayerProp(StartOfRound.Instance.localPlayerController) ? LPHRoundManager.PROPS_ROLE : LPHRoundManager.HUNTERS_ROLE));
             }
         }
     }

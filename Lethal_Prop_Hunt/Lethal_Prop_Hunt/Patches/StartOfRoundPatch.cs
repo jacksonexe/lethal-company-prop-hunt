@@ -14,14 +14,12 @@ namespace LethalPropHunt.Patches
         [HarmonyPostfix]
         static void OnShipLandedMiscEventsPatch(StartOfRound __instance)
         {
-            Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
-            if (terminal != null)
+            if (__instance.IsHost || __instance.IsServer)
             {
-                terminal.groupCredits = 500;
-            }
-            if (__instance.IsHost || __instance.IsServer) 
-            {
-                LPHRoundManager.Instance.StartRound(__instance);
+                foreach (PlayerControllerB player in LPHRoundManager.Hunters)
+                {
+                    LPHNetworkHandler.Instance.GiveHunterWeaponsServerRpc(player.playerClientId);
+                }
             }
         }
 
@@ -111,6 +109,7 @@ namespace LethalPropHunt.Patches
                 player.usernameBillboardText.gameObject.SetActive(true);
                 player.usernameBillboardText.SetText(player.playerUsername);
             }
+            PlayerControllerBPatch.OnDisable();
             UnlockableSuit.SwitchSuitForAllPlayers(0);
 
         }

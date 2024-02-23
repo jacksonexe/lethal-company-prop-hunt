@@ -124,10 +124,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\LPHTauntCountdown.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Remove="crosshair.png" />
   </ItemGroup>

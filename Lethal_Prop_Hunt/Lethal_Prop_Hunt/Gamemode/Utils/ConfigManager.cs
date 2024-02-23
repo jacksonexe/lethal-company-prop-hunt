@@ -58,7 +58,7 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
                 Max = 10f,
                 CanModifyCallback = CanModifyCallback
             }));
-            ScrapMultiplier = PropHuntBase.Instance.Config.Bind("Map", "Scrap Multiplier", 10f, "The multiplier on how much scrap is generated for the given level.");
+            ScrapMultiplier = PropHuntBase.Instance.Config.Bind("Map", "Scrap Multiplier", 20f, "The multiplier on how much scrap is generated for the given level.");
             LethalConfigManager.AddConfigItem(new FloatInputFieldConfigItem(ScrapMultiplier, new FloatInputFieldOptions
             {
                 Min = 1f,

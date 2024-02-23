@@ -35,7 +35,7 @@ namespace LethalPropHunt.Patches
 
         public static void OnEnable()
         {
-            if (InThirdPerson)
+            if (InThirdPerson || Instance == null)
             {
                 return;
             }
@@ -61,7 +61,7 @@ namespace LethalPropHunt.Patches
 
         public static void OnDisable()
         {
-            if (!InThirdPerson)
+            if (!InThirdPerson || Instance == null)
             {
                 return;
             }
@@ -101,7 +101,7 @@ namespace LethalPropHunt.Patches
             ___playerBetaBadgeMesh.gameObject.SetActive(false);
             if (LPHRoundManager.Instance.IsRunning && !LPHRoundManager.Instance.IsRoundEnding)
             {
-                if(__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId && LPHRoundManager.IsLocalPlayerProp)
+                if(__instance.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId && LPHRoundManager.Instance.IsPlayerProp(StartOfRound.Instance.localPlayerController))
                 {
                     if (LPHInputManagement.LastLocalTaunt == null)
                     {
@@ -117,7 +117,7 @@ namespace LethalPropHunt.Patches
                 }
                 foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
                 {
-                    if (LPHRoundManager.Instance.GetPlayerRole(player).Equals(LPHRoundManager.PROPS_ROLE) && LPHRoundManager.Props.ContainsKey(player.playerClientId) && !player.isPlayerDead)
+                    if (LPHRoundManager.Instance.IsPlayerProp(player) && LPHRoundManager.Props.ContainsKey(player.playerClientId) && !player.isPlayerDead)
                     {
                         player.thisPlayerModel.gameObject.SetActive(false);
                         player.thisPlayerModelLOD1.gameObject.SetActive(false);
@@ -372,7 +372,7 @@ namespace LethalPropHunt.Patches
             {
                 return true;
             }
-            if (LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE))
+            if (LPHRoundManager.Instance.IsPlayerProp(__instance))
             {
                 PropHuntBase.mls.LogDebug("I am becoming a prop on layer " + currentlyGrabbingObject.gameObject.layer);
                 if (currentlyGrabbingObject.itemProperties != null)
@@ -413,21 +413,21 @@ namespace LethalPropHunt.Patches
         [HarmonyPatch("PlayFootstepSound")]
         public static bool PlayFootstepSoundPatch(PlayerControllerB __instance)
         {
-            return !LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId);
+            return !LPHRoundManager.Instance.IsPlayerProp(__instance) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId);
         }
 
         [HarmonyPrefix]
         [HarmonyPatch("PlayFootstepLocal")]
         public static bool PlayFootstepLocalPatch(PlayerControllerB __instance)
         {
-            return !LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId);
+            return !LPHRoundManager.Instance.IsPlayerProp(__instance) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId);
         }
 
         [HarmonyPrefix]
         [HarmonyPatch("PlayFootstepServer")]
         public static bool PlayFootstepServerPatch(PlayerControllerB __instance)
         {
-            return !LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId);
+            return !LPHRoundManager.Instance.IsPlayerProp(__instance) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId);
         }
 
 
@@ -446,7 +446,7 @@ namespace LethalPropHunt.Patches
                 ___playerSlidingTimer = 0f;
                 ___isJumping = true;
                 __instance.sprintMeter = Mathf.Clamp(__instance.sprintMeter - 0.08f, 0f, 1f);
-                if (!LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId))
+                if (!LPHRoundManager.Instance.IsPlayerProp(__instance) || !LPHRoundManager.Props.ContainsKey(__instance.playerClientId))
                 {
                     __instance.movementAudio.PlayOneShot(StartOfRound.Instance.playerJumpSFX);
                 }
@@ -535,7 +535,7 @@ namespace LethalPropHunt.Patches
         [HarmonyPatch("DamagePlayer")]
         public static void DamagePlayerPatch(ref int damageNumber, bool hasDamageSFX, bool callRPC, CauseOfDeath causeOfDeath, int deathAnimation, bool fallDamage, Vector3 force, PlayerControllerB __instance)
         {
-            if (LPHRoundManager.Instance.GetPlayerRole(__instance).Equals(LPHRoundManager.PROPS_ROLE) && LPHRoundManager.Props.ContainsKey(__instance.playerClientId))
+            if (LPHRoundManager.Instance.IsPlayerProp(__instance) && LPHRoundManager.Props.ContainsKey(__instance.playerClientId))
             {
                 GrabbableObject prop = LPHRoundManager.Props[__instance.playerClientId];
                 if (prop != null && prop.itemProperties != null && damageNumber > 0) //Reduce damage when in prop

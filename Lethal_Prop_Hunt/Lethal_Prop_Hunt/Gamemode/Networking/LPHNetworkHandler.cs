@@ -1,5 +1,6 @@
 ﻿using BepInEx.Logging;
 using GameNetcodeStuff;
+using HarmonyLib;
 using LethalPropHunt.Audio;
 using LethalPropHunt.Patches;
 using System;
@@ -82,6 +83,22 @@ namespace LethalPropHunt.Gamemode
                     Utilities.DisplayTips("You are a ", role, role.Equals(LPHRoundManager.HUNTERS_ROLE));
                     Utilities.AddChatMessage("You are a " + role, role.Equals(LPHRoundManager.HUNTERS_ROLE) ? "FF0000" : "008000");
                     LPHRoundManager.Instance.RegisterLocalPlayersRole(role, player);
+                    if (role.Equals(LPHRoundManager.PROPS_ROLE))
+                    {
+                        EntranceTeleport[] array = UnityEngine.Object.FindObjectsOfType<EntranceTeleport>();
+                        if (array != null && array.Length != 0)
+                        {
+                            for (int j = 0; j < array.Length; j++)
+                            {
+                                array[j].enabled = false;
+                                InteractTrigger interact = array[j].gameObject.GetComponent<InteractTrigger>();
+                                if(interact != null)
+                                {
+                                    interact.interactable = false;
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -103,9 +120,7 @@ namespace LethalPropHunt.Gamemode
                 else if (id == StartOfRound.Instance.localPlayerController.playerClientId)
                 {
                     //Evil gets it good
-                    GiveHunterWeaponsServerRpc(id);
                     UnlockableSuit.SwitchSuitForPlayer(player, 0, false);
-
                 }
             }
         }
@@ -134,6 +149,7 @@ namespace LethalPropHunt.Gamemode
             mls.LogDebug("Round ended received, winner " + winner);
             PlayerControllerB player = GameNetworkManager.Instance.localPlayerController;
             Utilities.DisplayTips("Round Over ", "Winner: " + winner, warn);
+            PlayerControllerBPatch.OnDisable();
             if (!player.isPlayerDead)
             {
                 StartOfRound.Instance.ForcePlayerIntoShip();
@@ -184,10 +200,11 @@ namespace LethalPropHunt.Gamemode
             {
                 GameObject obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.allItemsList.itemsList[59].spawnPrefab, spawnPos, Quaternion.identity);
                 obj.GetComponent<GrabbableObject>().fallTime = 0f;
-
+                
                 obj.AddComponent<ScanNodeProperties>().scrapValue = 0;
                 obj.GetComponent<GrabbableObject>().SetScrapValue(0);
                 obj.GetComponent<NetworkObject>().Spawn();
+                ulong shotgunId = obj.GetComponent<GrabbableObject>().NetworkObjectId;
 
                 obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.allItemsList.itemsList[10].spawnPrefab, spawnPos, Quaternion.identity);
                 obj.GetComponent<GrabbableObject>().fallTime = 0f;
@@ -195,6 +212,7 @@ namespace LethalPropHunt.Gamemode
                 obj.AddComponent<ScanNodeProperties>().scrapValue = 0;
                 obj.GetComponent<GrabbableObject>().SetScrapValue(0);
                 obj.GetComponent<NetworkObject>().Spawn();
+                ulong shovelId = obj.GetComponent<GrabbableObject>().NetworkObjectId;
 
                 obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.allItemsList.itemsList[9].spawnPrefab, spawnPos, Quaternion.identity);
                 obj.GetComponent<GrabbableObject>().fallTime = 0f;
@@ -202,6 +220,7 @@ namespace LethalPropHunt.Gamemode
                 obj.AddComponent<ScanNodeProperties>().scrapValue = 0;
                 obj.GetComponent<GrabbableObject>().SetScrapValue(0);
                 obj.GetComponent<NetworkObject>().Spawn();
+                ulong radioId = obj.GetComponent<GrabbableObject>().NetworkObjectId;
 
                 obj = UnityEngine.Object.Instantiate(StartOfRound.Instance.allItemsList.itemsList[14].spawnPrefab, spawnPos, Quaternion.identity);
                 obj.GetComponent<GrabbableObject>().fallTime = 0f;
@@ -209,6 +228,106 @@ namespace LethalPropHunt.Gamemode
                 obj.AddComponent<ScanNodeProperties>().scrapValue = 0;
                 obj.GetComponent<GrabbableObject>().SetScrapValue(0);
                 obj.GetComponent<NetworkObject>().Spawn();
+                ulong flashlightId = obj.GetComponent<GrabbableObject>().NetworkObjectId;
+                /*GiveHunterWeaponsClientRpc(clientId, shotgunId, shovelId, radioId, flashlightId, new ClientRpcParams
+                {
+                    Send = new ClientRpcSendParams
+                    {
+                        TargetClientIds = new ulong[] { clientId },
+                    }
+                });*/
+            }
+        }
+
+        private int FirstEmptyItemSlot(PlayerControllerB player)
+        {
+            int result = -1;
+            if (player.ItemSlots[player.currentItemSlot] == null)
+            {
+                result = player.currentItemSlot;
+            }
+            else
+            {
+                for (int i = 0; i < player.ItemSlots.Length; i++)
+                {
+                    if (player.ItemSlots[i] == null)
+                    {
+                        result = i;
+                        break;
+                    }
+                }
+            }
+            return result;
+        }
+
+        private IEnumerator GrabObject(PlayerControllerB player, GrabbableObject prop)
+        {
+            yield return new WaitForSeconds(0.1f);
+            prop.parentObject = player.localItemHolder;
+            if (prop.itemProperties.grabSFX != null)
+            {
+                player.itemAudio.PlayOneShot(prop.itemProperties.grabSFX, 1f);
+            }
+            if (prop.playerHeldBy != null)
+            {
+                Debug.Log($"playerHeldBy on currentlyGrabbingObject 1: {prop.playerHeldBy}");
+            }
+            prop.GrabItemOnClient();
+            player.isHoldingObject = true;
+            yield return new WaitForSeconds(player.grabObjectAnimationTime - 0.2f);
+            player.playerBodyAnimator.SetBool("GrabValidated", value: true);
+            player.isGrabbingObjectAnimation = false;
+        }
+
+        [ClientRpc]
+        internal void GiveHunterWeaponsClientRpc(ulong playerId, ulong shotgunId, ulong shovelId, ulong radioId, ulong flashlightId, ClientRpcParams clientRpcParans = default)
+        {
+            PlayerControllerB player = null;
+            for (int i = 0; i < StartOfRound.Instance.allPlayerScripts.Length; i++)
+            {
+                if (StartOfRound.Instance.allPlayerScripts[i].playerClientId == playerId)
+                {
+                    player = StartOfRound.Instance.allPlayerScripts[i];
+                }
+            }
+            GrabbableObject[] array = UnityEngine.Object.FindObjectsOfType<GrabbableObject>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i] != null && (array[i].NetworkObjectId == shotgunId || array[i].NetworkObjectId == shovelId || array[i].NetworkObjectId == radioId || array[i].NetworkObjectId == flashlightId))
+                {
+                    try
+                    {
+                        array[i].InteractItem();
+                        if (array[i].grabbable && FirstEmptyItemSlot(player) != -1)
+                        {
+                            player.playerBodyAnimator.SetBool("GrabInvalidated", value: false);
+                            player.playerBodyAnimator.SetBool("GrabValidated", value: false);
+                            player.playerBodyAnimator.SetBool("cancelHolding", value: false);
+                            player.playerBodyAnimator.ResetTrigger("Throw");
+                            player.isGrabbingObjectAnimation = true;
+                            player.cursorIcon.enabled = false;
+                            player.cursorTip.text = "";
+                            player.twoHanded = array[i].itemProperties.twoHanded;
+                            player.carryWeight += Mathf.Clamp(array[i].itemProperties.weight - 1f, 0f, 10f);
+                            if (!player.isTestingPlayer)
+                            {
+                                NetworkObject networkObject = array[i].NetworkObject;
+                                var GrabObjectServerRpcInfo = typeof(PlayerControllerB).GetMethod(
+                                    "GrabObjectServerRpc",
+                                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance
+                                );
+                                GrabObjectServerRpcInfo.Invoke(player, new object[] { networkObject });
+                            }
+                            IEnumerator grabObjectCoroutine = (IEnumerator)Traverse.Create(player).Field("grabObjectCoroutine");
+                            if (grabObjectCoroutine != null)
+                            {
+                                player.StopCoroutine(grabObjectCoroutine);
+                            }
+                            Traverse.Create(player).Field("grabObjectCoroutine").SetValue(player.StartCoroutine(GrabObject(player, array[i])));
+                        }
+                    }
+                    catch (Exception e) { }
+                }
             }
         }
 
@@ -228,7 +347,7 @@ namespace LethalPropHunt.Gamemode
             startMatchLever.triggerScript.interactable = false;
             startMatchLever.leverAnimatorObject.SetBool("pullLever", false);
             //Take them out of third person and remove props
-            if (LPHRoundManager.IsLocalPlayerProp)
+            if (LPHRoundManager.Instance.IsPlayerProp(StartOfRound.Instance.localPlayerController))
             {
                 PlayerControllerBPatch.OnDisable();
             }

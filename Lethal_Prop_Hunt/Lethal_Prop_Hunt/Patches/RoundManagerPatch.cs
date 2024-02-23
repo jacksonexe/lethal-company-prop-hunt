@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Netcode;
 using Lethal_Prop_Hunt.Gamemode.Utils;
+using System;
+using System.Collections;
 
 namespace LethalPropHunt.Patches
 {
@@ -29,10 +31,6 @@ namespace LethalPropHunt.Patches
             {
                 terminal.groupCredits = 500;
             }
-            if (TimeOfDay.Instance != null)
-            {
-                TimeOfDay.Instance.globalTimeSpeedMultiplier = ConfigManager.TimeMultiplier.Value;
-            }
         }
 
         [HarmonyPatch("Update")]
@@ -41,7 +39,7 @@ namespace LethalPropHunt.Patches
         {
             //Despawn hazards
             EnemyAI[] enemies = UnityEngine.Object.FindObjectsOfType<EnemyAI>();
-            if(enemies != null && enemies.Length > 0 )
+            if (enemies != null && enemies.Length > 0)
             {
                 for (int i = 0; i < enemies.Length; i++)
                 {
@@ -130,13 +128,34 @@ namespace LethalPropHunt.Patches
             }
         }
 
+        private static System.Collections.IEnumerator StartLPHRound()
+        {
+            yield return new WaitForSeconds(4f);
+            Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
+            if (terminal != null)
+            {
+                terminal.groupCredits = 500;
+            }
+            if (StartOfRound.Instance.IsHost || StartOfRound.Instance.IsServer)
+            {
+                LPHRoundManager.Instance.StartRound(StartOfRound.Instance);
+            }
+        }
+
+        [HarmonyPatch("LoadNewLevelWait")]
+        [HarmonyPostfix]
+        public static void LoadNewLevelWaitPatch(RoundManager __instance)
+        {
+            __instance.StartCoroutine(StartLPHRound());
+        }
+
         [HarmonyPatch("SetLockedDoors")]
         [HarmonyPrefix]
         public static bool SetLockedDoorsPatch(Vector3 mainEntrancePosition, RoundManager __instance)
         {
-            if(!ConfigManager.AllowKeys.Value) { return false; }
+            if (!ConfigManager.AllowKeys.Value) { return false; }
             //copied from source
-            List<DoorLock> list = Object.FindObjectsOfType<DoorLock>().ToList();
+            List<DoorLock> list = UnityEngine.Object.FindObjectsOfType<DoorLock>().ToList();
             for (int num = list.Count - 1; num >= 0; num--)
             {
                 if (list[num].transform.position.y > -160f)
@@ -162,10 +181,27 @@ namespace LethalPropHunt.Patches
                 {
                     int num4 = __instance.AnomalyRandom.Next(0, __instance.insideAINodes.Length);
                     Vector3 randomNavMeshPositionInBoxPredictable = __instance.GetRandomNavMeshPositionInBoxPredictable(__instance.insideAINodes[num4].transform.position, 8f, __instance.navHit, __instance.AnomalyRandom);
-                    Object.Instantiate(__instance.keyPrefab, randomNavMeshPositionInBoxPredictable, Quaternion.identity, __instance.spawnedScrapContainer).GetComponent<NetworkObject>().Spawn();
+                    UnityEngine.Object.Instantiate(__instance.keyPrefab, randomNavMeshPositionInBoxPredictable, Quaternion.identity, __instance.spawnedScrapContainer).GetComponent<NetworkObject>().Spawn();
                 }
             }
             return false; //Disable parent
+        }
+
+        [HarmonyPatch("SetBigDoorCodes")]
+        [HarmonyPostfix]
+        private static void SetBigDoorCodesPatch(Vector3 mainEntrancePosition)
+        {
+            TerminalAccessibleObject[] array = (from x in UnityEngine.Object.FindObjectsOfType<TerminalAccessibleObject>()
+                                                orderby (x.transform.position - mainEntrancePosition).sqrMagnitude
+                                                select x).ToArray();
+
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (array[i].isBigDoor)
+                {
+                    array[i].SetDoorOpen(open: true);
+                }
+            }
         }
     }
 }
