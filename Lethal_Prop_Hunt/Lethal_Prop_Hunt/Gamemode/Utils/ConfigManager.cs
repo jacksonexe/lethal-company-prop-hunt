@@ -21,6 +21,7 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
         public static ConfigEntry<bool> AllowKeys { get; private set; }
         public static ConfigEntry<int> ForceTauntInterval { get; private set; }
         public static ConfigEntry<bool> ForceTaunt { get; private set; }
+        public static ConfigEntry<float> PropDamageScale { get; private set; }
 
         public static bool init = false;
 
@@ -76,6 +77,14 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
             AllowKeys = PropHuntBase.Instance.Config.Bind("Props", "Allow Keys", true, new ConfigDescription("Whether or not to include the key as a scrap item because its kinda really small and OP."));
             LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(AllowKeys, new BoolCheckBoxOptions
             {
+                CanModifyCallback = CanModifyCallback
+            }));
+
+            PropDamageScale = PropHuntBase.Instance.Config.Bind("Props", "DamageScaling", 2f, new ConfigDescription("How damage is scaled based on prop weight, 1 is disabled."));
+            LethalConfigManager.AddConfigItem(new FloatInputFieldConfigItem(PropDamageScale, new FloatInputFieldOptions
+            {
+                Min = 1f,
+                Max = 100f,
                 CanModifyCallback = CanModifyCallback
             }));
         }

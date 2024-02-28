@@ -2,12 +2,6 @@
 using HarmonyLib;
 using LethalPropHunt;
 using LethalPropHunt.Gamemode;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Lethal_Prop_Hunt.Patches
@@ -34,14 +28,14 @@ namespace Lethal_Prop_Hunt.Patches
         public static void ShootGun(Vector3 shotgunPosition, Vector3 shotgunForward, ShotgunItem __instance, ref RaycastHit[] ___enemyColliders)
         {
             PlayerControllerB localPlayerController = GameNetworkManager.Instance.localPlayerController;
-            if (__instance.isHeld && __instance.playerHeldBy != null && localPlayerController != null && __instance.playerHeldBy == localPlayerController && LPHRoundManager.Instance.GetPlayerRole(localPlayerController).Equals(LPHRoundManager.HUNTERS_ROLE))
+            if (__instance.isHeld && __instance.playerHeldBy != null && localPlayerController != null && __instance.playerHeldBy == localPlayerController && __instance.playerHeldBy.isInsideFactory && LPHRoundManager.Instance.GetPlayerRole(localPlayerController).Equals(LPHRoundManager.HUNTERS_ROLE))
             {
-                Ray ray = new Ray(shotgunPosition - shotgunForward * 10f, shotgunForward);
+                Ray ray = new Ray(shotgunPosition - shotgunForward * 5f, shotgunForward);
                 if (___enemyColliders == null)
                 {
                     ___enemyColliders = new RaycastHit[10];
                 }
-                int num4 = Physics.SphereCastNonAlloc(ray, 5f, ___enemyColliders, 15f, (524288 | (1 << 6)), QueryTriggerInteraction.Collide);//Add layer 6 to mask
+                int num4 = Physics.SphereCastNonAlloc(ray, 5f, ___enemyColliders, 15f, (0 | (1 << 6)), QueryTriggerInteraction.Collide);//Add layer 6 to mask
                 GrabbableObject component;
                 RaycastHit hitInfo;
                 for (int i = 0; i < num4; i++)

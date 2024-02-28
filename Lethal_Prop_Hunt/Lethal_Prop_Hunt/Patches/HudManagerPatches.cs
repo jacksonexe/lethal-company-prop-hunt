@@ -126,11 +126,40 @@ namespace LethalPropHunt.Patches
                     {
                         TauntCooldownUI.HideTimer();
                     }
+                    __instance.ChangeControlTip(__instance.controlTipLines.Length - 3, "Taunt: [" + PropHuntBase.InputActionsInstance.Taunt.controls[0].displayName + "]");
+                    if (LPHRoundManager.Props.ContainsKey(StartOfRound.Instance.localPlayerController.playerClientId))
+                    {
+                        GrabbableObject prop = LPHRoundManager.Props[StartOfRound.Instance.localPlayerController.playerClientId];
+                        if (prop != null && prop.itemProperties != null && prop.itemProperties.usableInSpecialAnimations)
+                        {
+                            __instance.ChangeControlTip(__instance.controlTipLines.Length - 2, "Prop Interact: [LMB]");
+                        }
+                        else
+                        {
+                            __instance.ChangeControlTip(__instance.controlTipLines.Length - 2, "");
+                        }
+                        __instance.ChangeControlTip(__instance.controlTipLines.Length - 1, "Drop Disguse: [" + PropHuntBase.InputActionsInstance.DropProp.controls[0].displayName + "]");
+                    }
+                    else
+                    {
+                        __instance.ChangeControlTip(__instance.controlTipLines.Length - 2, "");
+                        __instance.ChangeControlTip(__instance.controlTipLines.Length - 1, "");
+                    }
+                }
+                else if (LPHRoundManager.Instance.IsPlayerProp(StartOfRound.Instance.localPlayerController))
+                {
+                    TauntCooldownUI.HideTimer();
+                    __instance.ChangeControlTip(__instance.controlTipLines.Length - 3, "");
+                    __instance.ChangeControlTip(__instance.controlTipLines.Length - 2, "");
+                    __instance.ChangeControlTip(__instance.controlTipLines.Length - 1, "");
                 }
             }
             else
             {
                 TauntCooldownUI.HideTimer();
+                __instance.ChangeControlTip(__instance.controlTipLines.Length - 3, "");
+                __instance.ChangeControlTip(__instance.controlTipLines.Length - 2, "");
+                __instance.ChangeControlTip(__instance.controlTipLines.Length - 1, "");
             }
         }
     }

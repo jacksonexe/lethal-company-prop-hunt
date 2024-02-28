@@ -545,8 +545,8 @@ namespace LethalPropHunt.Patches
                     __instance.DropBlood(-__instance.transform.forward, true, false);
                     __instance.DropBlood(-__instance.transform.forward, true, false);
                     int weight = Mathf.RoundToInt(Mathf.Clamp(prop.itemProperties.weight - 1f, 0f, 100f) * 105f);
-                    int factor = Mathf.CeilToInt(weight / 3);
-                    if (factor > 0 && weight > 3) //Scaling based on weight, higher the weight, the less health you have
+                    int factor = Mathf.CeilToInt(weight / ConfigManager.PropDamageScale.Value);
+                    if (factor > 0 && weight > ConfigManager.PropDamageScale.Value && ConfigManager.PropDamageScale.Value != 1) //Scaling based on weight, higher the weight, the less health you have
                     {
                         PropHuntBase.mls.LogDebug("Prop is of size " + weight + " factor set to " + factor + " damaged reduced from " + damageNumber + " to " + (damageNumber / factor));
                         damageNumber = Mathf.RoundToInt(damageNumber / factor);

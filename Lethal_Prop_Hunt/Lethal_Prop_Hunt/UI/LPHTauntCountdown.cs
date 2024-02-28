@@ -1,8 +1,6 @@
 ﻿using GameNetcodeStuff;
-using System;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Trouble_In_Company_Town.UI
 {
