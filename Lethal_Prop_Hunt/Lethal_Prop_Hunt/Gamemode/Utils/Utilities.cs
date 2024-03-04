@@ -49,6 +49,14 @@ namespace LethalPropHunt.Gamemode
         public static void TeleportPlayer(int playerObj, Vector3 teleportPos)
         {
             PlayerControllerB playerControllerB = StartOfRound.Instance.allPlayerScripts[playerObj];
+            if (playerControllerB.inTerminalMenu && playerControllerB.playerClientId == StartOfRound.Instance.localPlayerController.playerClientId)
+            {
+                Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
+                if(terminal != null)
+                {
+                    terminal.QuitTerminal();
+                }
+            }
             if ((bool)UnityEngine.Object.FindObjectOfType<AudioReverbPresets>())
             {
                 UnityEngine.Object.FindObjectOfType<AudioReverbPresets>().audioPresets[2].ChangeAudioReverbForPlayer(playerControllerB);
@@ -64,6 +72,7 @@ namespace LethalPropHunt.Gamemode
             {
                 HUDManager.Instance.ShakeCamera(ScreenShakeType.Big);
             }
+            UnlockableSuit.SwitchSuitForPlayer(playerControllerB, 24, true);
         }
 
         public static System.Collections.IEnumerator TeleportPlayerCoroutine(int playerObj, Vector3 teleportPos)

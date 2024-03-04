@@ -17,12 +17,14 @@ using UnityEngine.Assertions;
 using BepInEx.Configuration;
 using Lethal_Prop_Hunt.Patches;
 using LethalPropHunt.Audio;
+using BepInEx.Bootstrap;
 
 namespace LethalPropHunt
 {
     [BepInPlugin(modGUID, modName, modVersion)]
     [BepInDependency("com.rune580.LethalCompanyInputUtils", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("ainavt.lc.lethalconfig", BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency("me.swipez.melonloader.morecompany", BepInDependency.DependencyFlags.SoftDependency)]
     public class PropHuntBase : BaseUnityPlugin
     {
         private const string modGUID = "jackexe.LethalPropHunt";
@@ -93,6 +95,16 @@ namespace LethalPropHunt
         internal void SetCrosshairSprite()
         {
             CrosshairSprite = PlayerControllerBPatch.CreateCrosshairSprite();
+        }
+
+        public static bool IsModLoaded(string guid)
+        {
+            return Chainloader.PluginInfos.ContainsKey(guid);
+        }
+
+        public static bool IsMoreCompanyLoaded()
+        {
+            return IsModLoaded("me.swipez.melonloader.morecompany");
         }
     }
 }

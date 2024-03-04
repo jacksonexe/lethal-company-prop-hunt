@@ -38,16 +38,17 @@ namespace Lethal_Prop_Hunt.Patches
                 int num4 = Physics.SphereCastNonAlloc(ray, 5f, ___enemyColliders, 15f, (0 | (1 << 6)), QueryTriggerInteraction.Collide);//Add layer 6 to mask
                 GrabbableObject component;
                 RaycastHit hitInfo;
+                bool hasHitRealProp = false;
                 for (int i = 0; i < num4; i++)
                 {
                     PropHuntBase.mls.LogDebug("Collided with " + ___enemyColliders[i].collider.name);
-                    if (Physics.Linecast(shotgunPosition, ___enemyColliders[i].collider.transform.position, out hitInfo, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
+                    if (Physics.Linecast(shotgunPosition, ___enemyColliders[i].point, out hitInfo, StartOfRound.Instance.collidersAndRoomMaskAndDefault, QueryTriggerInteraction.Ignore))
                     {
                         Debug.DrawRay(hitInfo.point, Vector3.up, Color.red, 15f);
                         Debug.DrawLine(shotgunPosition, ___enemyColliders[i].point, Color.cyan, 15f);
                         Debug.Log("Raycast hit wall");
                     }
-                    else if (___enemyColliders[i].collider != null && ___enemyColliders[i].collider.gameObject.TryGetComponent<GrabbableObject>(out component))
+                    else if (___enemyColliders[i].collider != null && ___enemyColliders[i].collider.gameObject.TryGetComponent<GrabbableObject>(out component) && !hasHitRealProp)
                     {
                         float num5 = Vector3.Distance(shotgunPosition, ___enemyColliders[i].point);
                         int num6 = ((num5 < 3.7f) ? 5 : ((!(num5 < 6f)) ? 2 : 3));
@@ -62,6 +63,7 @@ namespace Lethal_Prop_Hunt.Patches
                         }
                         if (!found)
                         {
+                            hasHitRealProp = true; //Only damage them once because that would be a bit bad
                             __instance.playerHeldBy.DamagePlayer(10, true, true, CauseOfDeath.Gunshots); //Damage player if they hit non player prop
                         }
                     }

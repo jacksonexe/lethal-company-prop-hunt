@@ -12,12 +12,14 @@ using Unity.Netcode;
 using Lethal_Prop_Hunt.Gamemode.Utils;
 using System;
 using System.Collections;
+using MoreCompany.Cosmetics;
 
 namespace LethalPropHunt.Patches
 {
     [HarmonyPatch(typeof(RoundManager))]
     internal class RoundManagerPatch
     {
+        public static Dictionary<ulong, CosmeticApplication> PlayerCosmetics = new Dictionary<ulong, CosmeticApplication>();
 
         [HarmonyPatch("Awake")]
         [HarmonyPostfix]
@@ -131,6 +133,18 @@ namespace LethalPropHunt.Patches
         private static System.Collections.IEnumerator StartLPHRound()
         {
             yield return new WaitForSeconds(4f);
+            if (PropHuntBase.IsMoreCompanyLoaded())
+            {
+                PlayerCosmetics.Clear();
+                foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
+                {
+                    CosmeticApplication component = ((Component)((Component)player).transform.Find("ScavengerModel").Find("metarig")).gameObject.GetComponent<CosmeticApplication>();
+                    if(component != null)
+                    {
+                        PlayerCosmetics.Add(player.playerClientId, component);
+                    }
+                }
+            }
             Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
             if (terminal != null)
             {

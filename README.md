@@ -14,3 +14,5 @@ Taunts were taken from https://github.com/MrLuckyGamer/prophuntenhanced/tree/mas
 Implementation of third person was taken from https://github.com/bakerj76/LCThirdPerson
 
 Audio manager Implementation taken from https://github.com/cmooref17/Lethal-Company-TooManyEmotes/blob/main/TooManyEmotes/Audio/AudioManager.cs
+
+Compatibility with More Company mod https://thunderstore.io/c/lethal-company/p/notnotnotswipez/MoreCompany/.

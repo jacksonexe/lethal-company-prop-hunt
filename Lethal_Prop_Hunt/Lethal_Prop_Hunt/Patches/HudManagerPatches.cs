@@ -139,6 +139,7 @@ namespace LethalPropHunt.Patches
                             __instance.ChangeControlTip(__instance.controlTipLines.Length - 2, "");
                         }
                         __instance.ChangeControlTip(__instance.controlTipLines.Length - 1, "Drop Disguse: [" + PropHuntBase.InputActionsInstance.DropProp.controls[0].displayName + "]");
+                        __instance.ChangeControlTip(__instance.controlTipLines.Length - 4, "Lock Rotation: [" + PropHuntBase.InputActionsInstance.LockRotation.controls[0].displayName + "]");
                     }
                     else
                     {

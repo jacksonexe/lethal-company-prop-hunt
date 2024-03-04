@@ -16,6 +16,7 @@ using UnityEngine.InputSystem;
 using LethalPropHunt.Input;
 using LethalPropHunt.Audio;
 using Lethal_Prop_Hunt.Gamemode.Utils;
+using MoreCompany.Cosmetics;
 
 namespace LethalPropHunt.Patches
 {
@@ -127,7 +128,17 @@ namespace LethalPropHunt.Patches
                         player.usernameBillboard.gameObject.SetActive(false);
                         player.usernameBillboardText.gameObject.SetActive(false);
                         player.usernameBillboardText.SetText("");
-
+                        if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
+                        {
+                            CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
+                            if (cosmetic != null)
+                            {
+                                foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
+                                {
+                                    spawnedCosmetic.gameObject.SetActive(false);
+                                }
+                            }
+                        }
                     }
                     else
                     {
@@ -139,6 +150,17 @@ namespace LethalPropHunt.Patches
                         player.usernameBillboard.gameObject.SetActive(true);
                         player.usernameBillboardText.gameObject.SetActive(true);
                         player.usernameBillboardText.SetText(player.playerUsername);
+                        if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
+                        {
+                            CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
+                            if (cosmetic != null)
+                            {
+                                foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
+                                {
+                                    spawnedCosmetic.gameObject.SetActive(true);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -154,6 +176,17 @@ namespace LethalPropHunt.Patches
                     player.usernameBillboard.gameObject.SetActive(true);
                     player.usernameBillboardText.gameObject.SetActive(true);
                     player.usernameBillboardText.SetText(player.playerUsername);
+                    if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
+                    {
+                        CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
+                        if (cosmetic != null)
+                        {
+                            foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
+                            {
+                                spawnedCosmetic.gameObject.SetActive(true);
+                            }
+                        }
+                    }
                 }
             }
             if (!___isPlayerControlled || ___isCameraDisabled)

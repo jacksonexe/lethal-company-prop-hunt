@@ -2,6 +2,7 @@
 using HarmonyLib;
 using Lethal_Prop_Hunt.Gamemode.Utils;
 using LethalPropHunt.Gamemode;
+using MoreCompany.Cosmetics;
 using UnityEngine;
 
 namespace LethalPropHunt.Patches
@@ -108,6 +109,17 @@ namespace LethalPropHunt.Patches
                 player.usernameBillboard.gameObject.SetActive(true);
                 player.usernameBillboardText.gameObject.SetActive(true);
                 player.usernameBillboardText.SetText(player.playerUsername);
+                if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
+                {
+                    CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
+                    if (cosmetic != null)
+                    {
+                        foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
+                        {
+                            spawnedCosmetic.gameObject.SetActive(true);
+                        }
+                    }
+                }
             }
             PlayerControllerBPatch.OnDisable();
             UnlockableSuit.SwitchSuitForAllPlayers(0);
