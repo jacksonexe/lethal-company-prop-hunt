@@ -1,5 +1,6 @@
 # lethal-company-prop-hunt
 A lethal company mod that adds a prop hunt gamemode.
+Created for my youtube but available to all: https://youtube.com/@jackexe
 
 Assets were created using unity 2022.3.18f1
 
