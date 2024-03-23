@@ -109,11 +109,13 @@ namespace LethalPropHunt.Patches
                 player.usernameBillboard.gameObject.SetActive(true);
                 player.usernameBillboardText.gameObject.SetActive(true);
                 player.usernameBillboardText.SetText(player.playerUsername);
+                player.helmetLight.enabled = false; //If they had a flashlight on
                 if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
                 {
                     CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
                     if (cosmetic != null)
                     {
+                        cosmetic.enabled = true;
                         foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
                         {
                             spawnedCosmetic.gameObject.SetActive(true);

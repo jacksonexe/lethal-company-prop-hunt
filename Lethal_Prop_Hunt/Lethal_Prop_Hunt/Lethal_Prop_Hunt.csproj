@@ -51,8 +51,9 @@
     <Reference Include="LethalConfig">
       <HintPath>E:\SteamLibrary\steamapps\common\Lethal Company\BepInEx\plugins\AinaVT-LethalConfig\plugins\LethalConfig\LethalConfig.dll</HintPath>
     </Reference>
-    <Reference Include="MoreCompany">
-      <HintPath>E:\SteamLibrary\steamapps\common\Lethal Company\BepInEx\plugins\MoreCompany.dll</HintPath>
+    <Reference Include="MoreCompany, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>E:\SteamLibrary\steamapps\common\Lethal Company\BepInEx\plugins\notnotnotswipez-MoreCompany\MoreCompany.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

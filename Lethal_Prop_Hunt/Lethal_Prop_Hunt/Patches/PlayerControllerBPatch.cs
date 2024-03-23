@@ -181,6 +181,7 @@ namespace LethalPropHunt.Patches
                         CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
                         if (cosmetic != null)
                         {
+                            cosmetic.enabled = false;
                             foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
                             {
                                 spawnedCosmetic.gameObject.SetActive(true);
