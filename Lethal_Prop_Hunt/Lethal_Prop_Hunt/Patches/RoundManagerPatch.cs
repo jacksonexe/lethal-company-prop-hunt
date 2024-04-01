@@ -31,7 +31,7 @@ namespace LethalPropHunt.Patches
             Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
             if (terminal != null)
             {
-                terminal.groupCredits = 500;
+                terminal.groupCredits = 99999;
             }
         }
 
