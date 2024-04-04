@@ -14,7 +14,7 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
 {
     internal class ConfigManager
     {
-        public static ConfigEntry<int> NumberOfProps { get; private set; }
+        public static ConfigEntry<int> PlayerDistribution { get; private set; }
         public static ConfigEntry<float> MapMultiplier { get; private set; }
         public static ConfigEntry<float> ScrapMultiplier { get; private set; }
         public static ConfigEntry<float> TimeMultiplier { get; private set; }
@@ -22,6 +22,7 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
         public static ConfigEntry<int> ForceTauntInterval { get; private set; }
         public static ConfigEntry<bool> ForceTaunt { get; private set; }
         public static ConfigEntry<float> PropDamageScale { get; private set; }
+        public static ConfigEntry<bool> ForcePropWeight { get; private set; }
 
         public static bool init = false;
 
@@ -30,11 +31,11 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
             //We want to make sure the server can only edit these values
             if (init) return;
             init = true;
-            NumberOfProps = PropHuntBase.Instance.Config.Bind("Props", "Number of Props", 1, new ConfigDescription("Number of props, if exceeds number of players, 1 is used."));
-            LethalConfigManager.AddConfigItem(new IntInputFieldConfigItem(NumberOfProps, new IntInputFieldOptions
+            PlayerDistribution = PropHuntBase.Instance.Config.Bind("Players", "Player Team Balancing", 50, new ConfigDescription("How teams are balanced as a percentage, 50% means half the players are props and half are hunters. If the number of players is an odd number, this will favor hunters"));
+            LethalConfigManager.AddConfigItem(new IntInputFieldConfigItem(PlayerDistribution, new IntInputFieldOptions
             {
-                Min = 1,
-                Max = LPHRoundManager.MAX_PROPS,
+                Min = 0,
+                Max = 100,
                 CanModifyCallback = CanModifyCallback
             }));
 
@@ -49,6 +50,12 @@ namespace Lethal_Prop_Hunt.Gamemode.Utils
             {
                 Min = 1,
                 Max = 60,
+                CanModifyCallback = CanModifyCallback
+            }));
+
+            ForcePropWeight = PropHuntBase.Instance.Config.Bind("Props", "Force Prop Weight Restriction", false, new ConfigDescription("Forces prop players to gain weight equal to their prop which will hinder sprinting. This is a possible balancing feature but I can also see how props need this advantage so its off by default."));
+            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(ForcePropWeight, new BoolCheckBoxOptions
+            {
                 CanModifyCallback = CanModifyCallback
             }));
 

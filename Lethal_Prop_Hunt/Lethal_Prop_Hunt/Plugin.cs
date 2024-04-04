@@ -24,12 +24,12 @@ namespace LethalPropHunt
     [BepInPlugin(modGUID, modName, modVersion)]
     [BepInDependency("com.rune580.LethalCompanyInputUtils", BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency("ainavt.lc.lethalconfig", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInDependency("me.swipez.melonloader.morecompany", BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency("me.swipez.melonloader.morecompany", BepInDependency.DependencyFlags.HardDependency)]
     public class PropHuntBase : BaseUnityPlugin
     {
         private const string modGUID = "jackexe.LethalPropHunt";
         private const string modName = "Letahl Prop Hunt";
-        private const string modVersion = "1.0.0";
+        private const string modVersion = "1.0.1";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         public static PropHuntBase Instance;

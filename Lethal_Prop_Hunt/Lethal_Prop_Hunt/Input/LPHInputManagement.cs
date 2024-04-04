@@ -5,6 +5,8 @@ using LethalPropHunt.Gamemode;
 using LethalPropHunt.Audio;
 using System;
 using GameNetcodeStuff;
+using UnityEngine;
+using Lethal_Prop_Hunt.Gamemode.Utils;
 
 namespace LethalPropHunt.Input
 {
@@ -65,6 +67,10 @@ namespace LethalPropHunt.Input
 
             if (LPHRoundManager.Instance.IsRunning && LPHRoundManager.Props.ContainsKey(StartOfRound.Instance.localPlayerController.playerClientId))
             {
+                if (ConfigManager.ForcePropWeight.Value)
+                {
+                    StartOfRound.Instance.localPlayerController.carryWeight -= Mathf.Clamp(LPHRoundManager.Props[StartOfRound.Instance.localPlayerController.playerClientId].itemProperties.weight - 1f, 0f, 10f);
+                }
                 LPHNetworkHandler.Instance.SyncPropOwnershipServerRpc(StartOfRound.Instance.localPlayerController.playerClientId, LPHRoundManager.Props[StartOfRound.Instance.localPlayerController.playerClientId].NetworkObjectId, false);
             }
         }

@@ -9,6 +9,7 @@ dotnet tool install -g Evaisa.NetcodePatcher.Cli
 You need to have .net runtime v8 installed and on your path.
 
 Props win if all hunters die or the clock reaches midnight. Hunters win if all props are eliminated. No mosters spawn, all flashlights/walkie-talkies are infinite energy, and props cannot exit the map.
+You are given some default money to be able to go to different planets and buy other gear.
 
 By default the following keybinds exit:
 | **Key** 	| **Description**                                                                                       	| **Prop Only** 	|
@@ -28,16 +29,22 @@ Audio manager Implementation taken from https://github.com/cmooref17/Lethal-Comp
 Compatibility with More Company mod https://thunderstore.io/c/lethal-company/p/notnotnotswipez/MoreCompany/.
 
 The gamemod has many configration options outlined below:
-| **Config**          	| **Default** 	| **Server Side** 	| **Description**                                                                                               	| **Min** 	| **Max** 	|
-|---------------------	|-------------	|-----------------	|---------------------------------------------------------------------------------------------------------------	|---------	|---------	|
-| Number of Props     	| 1           	| Yes             	| Number of props, if exceeds number of players, 1 is used.                                                     	| 1       	| 3       	|
-| Force Taunt         	| true        	| Yes             	| Whether or not to force the player to taunt after a period of time if they have not already done it manually. 	| false   	| true    	|
-| Taunting Interval   	| 30          	| Yes             	| Forces the player to taunt after a number of seconds.                                                         	| 1       	| 60      	|
-| Map Size Multiplier 	| 1           	| Yes             	| This tells the level generator how big you want the maps to be.                                               	| 1       	| 10      	|
-| Scrap Multiplier    	| 20          	| Yes             	| The multiplier on how much scrap is generated for the given level.                                            	| 1       	| 100     	|
-| Time Multiplier     	| 2           	| Yes             	| The multiplier on how fast time passes, 1 being a normal round. <1 is slower rounds, >1 is faster rounds.     	| 0.00001 	| 100     	|
-| Allow Keys          	| true        	| Yes             	| Whether or not to include the key as a scrap item because its kinda really small and OP.                      	| false   	| true    	|
-| DamageScaling       	| 2           	| Yes             	| How damage is scaled based on prop weight, 1 is disabled.                                                     	| 1       	| 100     	|
-| Taunt Volume        	| 0.3         	| No              	| The volume you want your taunts to be at, where 1 is 100% volume.                                             	| 0.00001 	| 1       	|
-| ShowCursor          	| true        	| No              	| Whether to show a cursor in third person or not                                                               	| false   	| true    	|
-| CameraOffset        	| 0, -1, -2   	| No              	| The camera offset for third person                                                                            	| N/A     	| N/A     	|
+| **Config**          			| **Default** 	| **Server Side** 	| **Description**                                                                                               																											| **Min** 	| **Max** 	|
+|-----------------------------	|-------------	|-----------------	|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------	|---------	|---------	|
+| Player Team Balancing			| 50           	| Yes             	| How teams are balanced as a percentage, 50% means half the players are props and half are hunters. If the number of players is an odd number, this will favor hunters                                                   	| 0       	| 100       |
+| Force Taunt         			| true        	| Yes             	| Whether or not to force the player to taunt after a period of time if they have not already done it manually. 																											| false   	| true    	|
+| Taunting Interval   			| 30          	| Yes             	| Forces the player to taunt after a number of seconds.                                                         																										    | 1       	| 60      	|
+| Map Size Multiplier 			| 1           	| Yes             	| This tells the level generator how big you want the maps to be.                                               																											| 1       	| 10      	|
+| Scrap Multiplier    			| 20          	| Yes             	| The multiplier on how much scrap is generated for the given level.                                            																											| 1       	| 100     	|
+| Time Multiplier     			| 2           	| Yes             	| The multiplier on how fast time passes, 1 being a normal round. <1 is slower rounds, >1 is faster rounds.     																											| 0.00001 	| 100     	|
+| Allow Keys          			| true        	| Yes             	| Whether or not to include the key as a scrap item because its kinda really small and OP.                      																											| false   	| true    	|
+| DamageScaling       			| 2           	| Yes             	| How damage is scaled based on prop weight, 1 is disabled.                                                     																											| 1       	| 100     	|
+| Taunt Volume        			| 0.3         	| No              	| The volume you want your taunts to be at, where 1 is 100% volume.                                             																											| 0.00001 	| 1       	|
+| ShowCursor          			| true        	| No              	| Whether to show a cursor in third person or not                                                               																											| false   	| true    	|
+| CameraOffset        			| 0, -1, -2   	| No              	| The camera offset for third person                                                                            																											| N/A     	| N/A     	|
+| Force Prop Weight Restriction | false			| Yes				| Forces prop players to gain weight equal to their prop which will hinder sprinting. This is a possible balancing feature but I can also see how props need this advantage so its off by default.							| N/A		| N/A		|
+
+Tested with the following Mods:
+* Too Many Emotes
+* Lethal Things
+* Scoopys Variety Mod

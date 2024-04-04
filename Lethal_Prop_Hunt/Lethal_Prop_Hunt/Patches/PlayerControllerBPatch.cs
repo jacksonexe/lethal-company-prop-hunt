@@ -16,7 +16,7 @@ using UnityEngine.InputSystem;
 using LethalPropHunt.Input;
 using LethalPropHunt.Audio;
 using Lethal_Prop_Hunt.Gamemode.Utils;
-using MoreCompany.Cosmetics;
+using BepInEx;
 
 namespace LethalPropHunt.Patches
 {
@@ -128,15 +128,19 @@ namespace LethalPropHunt.Patches
                         player.usernameBillboard.gameObject.SetActive(false);
                         player.usernameBillboardText.gameObject.SetActive(false);
                         player.usernameBillboardText.SetText("");
-                        if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
+                        if (PropHuntBase.IsMoreCompanyLoaded())
                         {
-                            CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
+                            MoreCompany.Cosmetics.CosmeticApplication cosmetic = RoundManagerPatch.GetPlayerCosmetics(player);
                             if (cosmetic != null)
                             {
-                                foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
+                                foreach (MoreCompany.Cosmetics.CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
                                 {
-                                    spawnedCosmetic.gameObject.SetActive(false);
+                                    ((Component)spawnedCosmetic).gameObject.SetActive(false);
                                 }
+                            }
+                            else
+                            {
+                                PropHuntBase.mls.LogDebug("Could not find cosmetics for " + player.playerClientId);
                             }
                         }
                     }
@@ -150,12 +154,12 @@ namespace LethalPropHunt.Patches
                         player.usernameBillboard.gameObject.SetActive(true);
                         player.usernameBillboardText.gameObject.SetActive(true);
                         player.usernameBillboardText.SetText(player.playerUsername);
-                        if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
+                        if (PropHuntBase.IsMoreCompanyLoaded())
                         {
-                            CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
+                            MoreCompany.Cosmetics.CosmeticApplication cosmetic = RoundManagerPatch.GetPlayerCosmetics(player);
                             if (cosmetic != null)
                             {
-                                foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
+                                foreach (MoreCompany.Cosmetics.CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
                                 {
                                     spawnedCosmetic.gameObject.SetActive(true);
                                 }
@@ -176,13 +180,12 @@ namespace LethalPropHunt.Patches
                     player.usernameBillboard.gameObject.SetActive(true);
                     player.usernameBillboardText.gameObject.SetActive(true);
                     player.usernameBillboardText.SetText(player.playerUsername);
-                    if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
+                    if (PropHuntBase.IsMoreCompanyLoaded())
                     {
-                        CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
+                        MoreCompany.Cosmetics.CosmeticApplication cosmetic = RoundManagerPatch.GetPlayerCosmetics(player);
                         if (cosmetic != null)
                         {
-                            cosmetic.enabled = false;
-                            foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
+                            foreach (MoreCompany.Cosmetics.CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
                             {
                                 spawnedCosmetic.gameObject.SetActive(true);
                             }
@@ -411,6 +414,10 @@ namespace LethalPropHunt.Patches
                 PropHuntBase.mls.LogDebug("I am becoming a prop on layer " + currentlyGrabbingObject.gameObject.layer);
                 if (currentlyGrabbingObject.itemProperties != null)
                 {
+                    if (ConfigManager.ForcePropWeight.Value)
+                    {
+                        __instance.carryWeight += Mathf.Clamp(currentlyGrabbingObject.itemProperties.weight - 1f, 0f, 10f);
+                    }
                     PropHuntBase.mls.LogDebug("Prop is " + Mathf.RoundToInt(Mathf.Clamp(currentlyGrabbingObject.itemProperties.weight - 1f, 0f, 100f) * 105f) + "lbs");
                 }
                 if (LPHRoundManager.Props.ContainsKey(__instance.playerClientId))

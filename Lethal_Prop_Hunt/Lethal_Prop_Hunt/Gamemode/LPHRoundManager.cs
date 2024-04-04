@@ -33,7 +33,6 @@ namespace LethalPropHunt.Gamemode
         public static readonly string PROPS_ROLE = "Prop";
         public static readonly string HUNTERS_ROLE = "Hunter";
 
-        public static readonly int MAX_PROPS = 3;
         internal ManualLogSource mls;
         private static LPHRoundManager _instance;
         public static LPHRoundManager Instance 
@@ -86,11 +85,14 @@ namespace LethalPropHunt.Gamemode
                     playersList.Add(controller);
                 }
             }
-            int numProps = ConfigManager.NumberOfProps.Value;
+            float dist = (float)ConfigManager.PlayerDistribution.Value / 100f;
+            float numPlayers = playersList.Count;
+            int numProps = (int)Math.Floor(numPlayers * dist);
+            mls.LogDebug("Picked " + numProps + " based on dist " + dist + " and player count " + (playersList.Count));
 
-            if(numProps > playersList.Count || numProps == 0)
+            if (numProps > playersList.Count || numProps == 0)
             {
-                numProps = 1;
+                numProps = playersList.Count - 1;
             }
             for (int i = 1; i <= numProps; i++)
             {

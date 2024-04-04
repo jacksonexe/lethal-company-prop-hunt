@@ -2,7 +2,6 @@
 using HarmonyLib;
 using Lethal_Prop_Hunt.Gamemode.Utils;
 using LethalPropHunt.Gamemode;
-using MoreCompany.Cosmetics;
 using UnityEngine;
 
 namespace LethalPropHunt.Patches
@@ -20,6 +19,10 @@ namespace LethalPropHunt.Patches
                 foreach (PlayerControllerB player in LPHRoundManager.Hunters)
                 {
                     LPHNetworkHandler.Instance.GiveHunterWeaponsServerRpc(player.playerClientId);
+                }
+                if (LPHRoundManager.Instance.IsRoundEnding || LPHRoundManager.Instance.IsRoundOver)
+                {
+                    StartOfRound.Instance.EndGameServerRpc(0);
                 }
             }
         }
@@ -110,13 +113,17 @@ namespace LethalPropHunt.Patches
                 player.usernameBillboardText.gameObject.SetActive(true);
                 player.usernameBillboardText.SetText(player.playerUsername);
                 player.helmetLight.enabled = false; //If they had a flashlight on
+                if (ConfigManager.ForcePropWeight.Value)
+                {
+                    player.carryWeight = 1f;
+                }
                 if (PropHuntBase.IsMoreCompanyLoaded() && RoundManagerPatch.PlayerCosmetics.ContainsKey(player.playerClientId))
                 {
-                    CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
+                    MoreCompany.Cosmetics.CosmeticApplication cosmetic = RoundManagerPatch.PlayerCosmetics[player.playerClientId];
                     if (cosmetic != null)
                     {
                         cosmetic.enabled = true;
-                        foreach (CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
+                        foreach (MoreCompany.Cosmetics.CosmeticInstance spawnedCosmetic in cosmetic.spawnedCosmetics)
                         {
                             spawnedCosmetic.gameObject.SetActive(true);
                         }

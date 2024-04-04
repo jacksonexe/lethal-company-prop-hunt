@@ -12,14 +12,13 @@ using Unity.Netcode;
 using Lethal_Prop_Hunt.Gamemode.Utils;
 using System;
 using System.Collections;
-using MoreCompany.Cosmetics;
 
 namespace LethalPropHunt.Patches
 {
     [HarmonyPatch(typeof(RoundManager))]
     internal class RoundManagerPatch
     {
-        public static Dictionary<ulong, CosmeticApplication> PlayerCosmetics = new Dictionary<ulong, CosmeticApplication>();
+        public static Dictionary<ulong, MoreCompany.Cosmetics.CosmeticApplication> PlayerCosmetics = new Dictionary<ulong, MoreCompany.Cosmetics.CosmeticApplication>();
 
         [HarmonyPatch("Awake")]
         [HarmonyPostfix]
@@ -130,16 +129,31 @@ namespace LethalPropHunt.Patches
             }
         }
 
+        public static MoreCompany.Cosmetics.CosmeticApplication GetPlayerCosmetics(PlayerControllerB player)
+        {
+            if (PlayerCosmetics.ContainsKey(player.playerClientId))
+            {
+                return PlayerCosmetics[player.playerClientId];
+            }
+            MoreCompany.Cosmetics.CosmeticApplication component = ((Component)((Component)player).transform.Find("ScavengerModel").Find("metarig")).gameObject.GetComponent<MoreCompany.Cosmetics.CosmeticApplication>();
+            if (component != null)
+            {
+                PropHuntBase.mls.LogDebug("Found cosmetics for " + player.playerUsername + " number of cosmetics " + component.spawnedCosmetics.Count);
+                PlayerCosmetics.Add(player.playerClientId, component);
+            }
+            return component;
+        }
+
         private static System.Collections.IEnumerator StartLPHRound()
         {
-            yield return new WaitForSeconds(4f);
+            yield return new WaitForSeconds(7f);
             if (PropHuntBase.IsMoreCompanyLoaded())
             {
                 PlayerCosmetics.Clear();
                 foreach (PlayerControllerB player in StartOfRound.Instance.allPlayerScripts)
                 {
-                    CosmeticApplication component = ((Component)((Component)player).transform.Find("ScavengerModel").Find("metarig")).gameObject.GetComponent<CosmeticApplication>();
-                    if(component != null)
+                    MoreCompany.Cosmetics.CosmeticApplication component = ((Component)((Component)player).transform.Find("ScavengerModel").Find("metarig")).gameObject.GetComponent<MoreCompany.Cosmetics.CosmeticApplication>();
+                    if (component != null)
                     {
                         PlayerCosmetics.Add(player.playerClientId, component);
                     }
@@ -148,7 +162,7 @@ namespace LethalPropHunt.Patches
             Terminal terminal = UnityEngine.Object.FindObjectOfType<Terminal>();
             if (terminal != null)
             {
-                terminal.groupCredits = 500;
+                terminal.groupCredits = 999999;
             }
             if (StartOfRound.Instance.IsHost || StartOfRound.Instance.IsServer)
             {
