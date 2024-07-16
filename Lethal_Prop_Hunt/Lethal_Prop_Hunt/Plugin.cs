@@ -29,7 +29,7 @@ namespace LethalPropHunt
     {
         private const string modGUID = "jackexe.LethalPropHunt";
         private const string modName = "Letahl Prop Hunt";
-        private const string modVersion = "1.0.1";
+        private const string modVersion = "1.0.2";
 
         private readonly Harmony harmony = new Harmony(modGUID);
         public static PropHuntBase Instance;

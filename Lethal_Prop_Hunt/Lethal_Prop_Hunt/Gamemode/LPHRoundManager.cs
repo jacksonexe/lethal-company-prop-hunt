@@ -96,7 +96,7 @@ namespace LethalPropHunt.Gamemode
             }
             for (int i = 1; i <= numProps; i++)
             {
-                System.Random rand = new System.Random(playersManager.randomMapSeed);
+                System.Random rand = new System.Random();
                 PlayerControllerB propController = playersList[rand.Next(0, playersList.Count)];
                 mls.LogDebug("Picked " + propController.playerClientId + " as a prop from between 0 and " + (playersList.Count-1));
                 playersList.Remove(propController);
